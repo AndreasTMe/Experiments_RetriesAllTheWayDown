@@ -1,0 +1,28 @@
+{
+    "name" : "D-brownout",
+    "description" : "NOT DEFAULTS: Worker MaxConcurrentCalls 32 (SDK default 1). OrdersApi limited to 2 concurrent requests of 1 s each (2/s) at 1.6 messages/s, with a 30 s spike to 5 messages/s.",
+    "rate" : 1.6,
+    "warmupSeconds" : 30,
+    "workerSwitches" : {
+        "MaxConcurrentCalls" : 32
+    },
+    "fault" : {
+        "kind" : "api",
+        "capacity" : 2,
+        "serviceTimeMs" : 1000
+    },
+    "faultStartSeconds" : 0,
+    "faultDurationSeconds" : 300,
+    "sendAfterFaultSeconds" : 0,
+    "rateChanges" : [
+        {
+            "atSeconds" : 90,
+            "rate" : 5
+        },
+        {
+            "atSeconds" : 120,
+            "rate" : 1.6
+        }
+    ],
+    "drainTimeoutSeconds" : 900
+}

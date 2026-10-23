@@ -1,0 +1,70 @@
+<Solution>
+    <Folder Name="/src/">
+        <Project Path="src/AppHost/AppHost.csproj" />
+        <Project Path="src/OrdersApi/OrdersApi.csproj" />
+        <Project Path="src/Producer/Producer.csproj" />
+        <Project Path="src/ServiceDefaults/ServiceDefaults.csproj" />
+        <Project Path="src/Worker/Worker.csproj" />
+    </Folder>
+    <Folder Name="/docs/">
+        <File Path="docs/defaults.md" />
+    </Folder>
+    <Folder Name="/results/" />
+    <Folder Name="/results/A-postgres-down-2min-20261026-230331/">
+        <File Path="results/A-postgres-down-2min-20261026-230331/config.json" />
+        <File Path="results/A-postgres-down-2min-20261026-230331/messages.csv" />
+        <File Path="results/A-postgres-down-2min-20261026-230331/summary.json" />
+        <File Path="results/A-postgres-down-2min-20261026-230331/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/A-postgres-down-5min-20261027-175925/">
+        <File Path="results/A-postgres-down-5min-20261027-175925/config.json" />
+        <File Path="results/A-postgres-down-5min-20261027-175925/messages.csv" />
+        <File Path="results/A-postgres-down-5min-20261027-175925/summary.json" />
+        <File Path="results/A-postgres-down-5min-20261027-175925/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/A-postgres-down-10min-20261027-180620/">
+        <File Path="results/A-postgres-down-10min-20261027-180620/config.json" />
+        <File Path="results/A-postgres-down-10min-20261027-180620/messages.csv" />
+        <File Path="results/A-postgres-down-10min-20261027-180620/summary.json" />
+        <File Path="results/A-postgres-down-10min-20261027-180620/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/A-postgres-down-20min-20261027-181915/">
+        <File Path="results/A-postgres-down-20min-20261027-181915/config.json" />
+        <File Path="results/A-postgres-down-20min-20261027-181915/messages.csv" />
+        <File Path="results/A-postgres-down-20min-20261027-181915/summary.json" />
+        <File Path="results/A-postgres-down-20min-20261027-181915/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/A-postgres-down-30s-20261027-175740/">
+        <File Path="results/A-postgres-down-30s-20261027-175740/config.json" />
+        <File Path="results/A-postgres-down-30s-20261027-175740/messages.csv" />
+        <File Path="results/A-postgres-down-30s-20261027-175740/summary.json" />
+        <File Path="results/A-postgres-down-30s-20261027-175740/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/B-postgres-slow-15s-20261026-231055/">
+        <File Path="results/B-postgres-slow-15s-20261026-231055/config.json" />
+        <File Path="results/B-postgres-slow-15s-20261026-231055/messages.csv" />
+        <File Path="results/B-postgres-slow-15s-20261026-231055/summary.json" />
+        <File Path="results/B-postgres-slow-15s-20261026-231055/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/C-api-errors-20pct-20261026-231751/">
+        <File Path="results/C-api-errors-20pct-20261026-231751/config.json" />
+        <File Path="results/C-api-errors-20pct-20261026-231751/messages.csv" />
+        <File Path="results/C-api-errors-20pct-20261026-231751/summary.json" />
+        <File Path="results/C-api-errors-20pct-20261026-231751/timeseries.csv" />
+    </Folder>
+    <Folder Name="/scenarios/">
+        <File Path="scenarios/A-postgres-down-10min.json" />
+        <File Path="scenarios/A-postgres-down-20min.json" />
+        <File Path="scenarios/A-postgres-down-2min.json" />
+        <File Path="scenarios/A-postgres-down-30s.json" />
+        <File Path="scenarios/A-postgres-down-5min.json" />
+        <File Path="scenarios/B-postgres-slow-15s.json" />
+        <File Path="scenarios/C-api-errors-20pct.json" />
+        <File Path="scenarios/D-brownout.json" />
+        <File Path="scenarios/smoke.json" />
+    </Folder>
+    <Folder Name="/scripts/">
+        <File Path="scripts/faults.ps1" />
+        <Project Path="scripts/Runner/Runner.csproj" />
+    </Folder>
+</Solution>

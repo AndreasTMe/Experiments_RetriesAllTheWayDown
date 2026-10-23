@@ -1,0 +1,13 @@
+{
+    "name" : "A-postgres-down-30s",
+    "description" : "toxiproxy proxy disabled (Postgres unreachable) for 30 seconds at 10 messages/s.",
+    "rate" : 10,
+    "warmupSeconds" : 30,
+    "fault" : {
+        "kind" : "proxy-disabled"
+    },
+    "faultStartSeconds" : 0,
+    "faultDurationSeconds" : 30,
+    "sendAfterFaultSeconds" : 30,
+    "drainTimeoutSeconds" : 900
+}

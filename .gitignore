@@ -1,0 +1,28 @@
+# Build output
+bin/
+obj/
+artifacts/
+*.user
+*.suo
+.vs/
+.vscode/
+.idea/
+*.swp
+TestResults/
+
+# Experiment output
+results/dev/
+
+# Local secrets and overrides
+appsettings.Local.json
+*.local.json
+.env
+.env.*
+secrets.json
+*.pfx
+*.key
+
+# Aspire / OS noise
+.aspire/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,14 @@
+{
+    "name" : "B-postgres-slow-15s",
+    "description" : "15 s latency toxic on the Postgres proxy for 2 minutes at 10 messages/s.",
+    "rate" : 10,
+    "warmupSeconds" : 30,
+    "fault" : {
+        "kind" : "latency",
+        "latencyMs" : 15000
+    },
+    "faultStartSeconds" : 0,
+    "faultDurationSeconds" : 120,
+    "sendAfterFaultSeconds" : 30,
+    "drainTimeoutSeconds" : 900
+}

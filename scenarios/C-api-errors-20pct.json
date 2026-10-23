@@ -1,0 +1,14 @@
+{
+    "name" : "C-api-errors-20pct",
+    "description" : "OrdersApi returns 500 for 20% of /orders requests for 2 minutes at 10 messages/s.",
+    "rate" : 10,
+    "warmupSeconds" : 30,
+    "fault" : {
+        "kind" : "api",
+        "errorRate" : 0.2
+    },
+    "faultStartSeconds" : 0,
+    "faultDurationSeconds" : 120,
+    "sendAfterFaultSeconds" : 30,
+    "drainTimeoutSeconds" : 900
+}

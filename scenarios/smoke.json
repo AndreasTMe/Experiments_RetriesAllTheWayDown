@@ -1,0 +1,14 @@
+{
+    "name" : "smoke",
+    "description" : "10 messages, no fault. Every layer should show exactly 1 attempt per message.",
+    "rate" : 10,
+    "messageCount" : 10,
+    "warmupSeconds" : 0,
+    "fault" : {
+        "kind" : "none"
+    },
+    "faultStartSeconds" : 0,
+    "faultDurationSeconds" : 0,
+    "sendAfterFaultSeconds" : 0,
+    "drainTimeoutSeconds" : 120
+}
