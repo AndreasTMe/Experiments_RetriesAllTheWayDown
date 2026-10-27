@@ -1,0 +1,148 @@
+{
+  "scenario": {
+    "name": "B-postgres-slow-15s",
+    "description": "15 s latency toxic on the Postgres proxy for 2 minutes at 10 messages/s.",
+    "rate": 10,
+    "messageCount": null,
+    "warmupSeconds": 30,
+    "fault": {
+      "kind": "latency",
+      "latencyMs": 15000,
+      "timeoutMs": 0,
+      "errorRate": 0,
+      "capacity": 0,
+      "serviceTimeMs": 0
+    },
+    "faultStartSeconds": 0,
+    "faultDurationSeconds": 120,
+    "sendAfterFaultSeconds": 30,
+    "drainTimeoutSeconds": 900,
+    "rateChanges": [],
+    "workerSwitches": null,
+    "faultAppliedAt": 30,
+    "faultRemovedAt": 150,
+    "producerStopsAt": 180
+  },
+  "configuration": "2a",
+  "runner": {
+    "producer": "http://localhost:5101",
+    "worker": "http://localhost:5102",
+    "ordersApi": "http://localhost:5103",
+    "toxiproxy": "http://localhost:8474",
+    "toxiproxyContainer": "external-toxiproxy",
+    "serviceBus": "Endpoint=sb://localhost:5672;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=***;UseDevelopmentEmulator=true;",
+    "serviceBusAdmin": "Endpoint=sb://localhost:5300;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=***;UseDevelopmentEmulator=true;",
+    "queue": "orders",
+    "proxy": "postgres"
+  },
+  "producer": {
+    "service": "producer",
+    "experiment": {
+      "httpRetries": false,
+      "dbRetries": false,
+      "passCancellation": false,
+      "alwaysThrow": false,
+      "holdMessageMs": 0,
+      "disableLockRenewal": false,
+      "maxConcurrentCalls": 1,
+      "maxDeliveryCount": 10
+    },
+    "images": {
+      "PgWeb": "docker.io/sosedoff/pgweb:0.16.2",
+      "Postgres": "docker.io/library/postgres:18.3",
+      "ServiceBusEmulator": "mcr.microsoft.com/azure-messaging/servicebus-emulator:2.0.0",
+      "ServiceBusEmulatorSql": "mcr.microsoft.com/mssql/server:2022-CU27-ubuntu-22.04",
+      "Toxiproxy": "ghcr.io/shopify/toxiproxy:2.13.0"
+    },
+    "serviceBusRetry": {
+      "mode": 1,
+      "maxRetries": 3,
+      "delay": "00:00:00.8000000",
+      "maxDelay": "00:01:00",
+      "tryTimeout": "00:01:00",
+      "customRetryPolicy": null
+    }
+  },
+  "worker": {
+    "service": "worker",
+    "experiment": {
+      "httpRetries": false,
+      "dbRetries": false,
+      "passCancellation": false,
+      "alwaysThrow": false,
+      "holdMessageMs": 0,
+      "disableLockRenewal": false,
+      "maxConcurrentCalls": 1,
+      "maxDeliveryCount": 10
+    },
+    "images": {
+      "PgWeb": "docker.io/sosedoff/pgweb:0.16.2",
+      "Postgres": "docker.io/library/postgres:18.3",
+      "ServiceBusEmulator": "mcr.microsoft.com/azure-messaging/servicebus-emulator:2.0.0",
+      "ServiceBusEmulatorSql": "mcr.microsoft.com/mssql/server:2022-CU27-ubuntu-22.04",
+      "Toxiproxy": "ghcr.io/shopify/toxiproxy:2.13.0"
+    },
+    "processor": {
+      "prefetchCount": 0,
+      "receiveMode": 0,
+      "autoCompleteMessages": true,
+      "maxAutoLockRenewalDuration": "00:05:00",
+      "maxConcurrentCalls": 1,
+      "subQueue": 0,
+      "identifier": null
+    },
+    "serviceBusRetry": {
+      "mode": 1,
+      "maxRetries": 3,
+      "delay": "00:00:00.8000000",
+      "maxDelay": "00:01:00",
+      "tryTimeout": "00:01:00",
+      "customRetryPolicy": null
+    }
+  },
+  "ordersapi": {
+    "service": "ordersapi",
+    "experiment": {
+      "httpRetries": false,
+      "dbRetries": false,
+      "passCancellation": false,
+      "alwaysThrow": false,
+      "holdMessageMs": 0,
+      "disableLockRenewal": false,
+      "maxConcurrentCalls": 1,
+      "maxDeliveryCount": 10
+    },
+    "images": {
+      "PgWeb": "docker.io/sosedoff/pgweb:0.16.2",
+      "Postgres": "docker.io/library/postgres:18.3",
+      "ServiceBusEmulator": "mcr.microsoft.com/azure-messaging/servicebus-emulator:2.0.0",
+      "ServiceBusEmulatorSql": "mcr.microsoft.com/mssql/server:2022-CU27-ubuntu-22.04",
+      "Toxiproxy": "ghcr.io/shopify/toxiproxy:2.13.0"
+    },
+    "faults": {
+      "errorRate": 0,
+      "capacity": 0,
+      "serviceTimeMs": 0
+    },
+    "database": {
+      "host": "localhost",
+      "port": 15432,
+      "timeoutSeconds": 15,
+      "commandTimeoutSeconds": 30,
+      "maxPoolSize": 100,
+      "executionStrategy": "Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy",
+      "retriesOnFailure": false
+    }
+  },
+  "toxiproxy": {
+    "version": "{\u0022version\u0022: \u00222.13.0\u0022}",
+    "proxy": {
+      "name": "postgres",
+      "listen": "[::]:15432",
+      "upstream": "external-postgres:5432",
+      "enabled": true,
+      "Logger": {},
+      "toxics": []
+    }
+  }
+}

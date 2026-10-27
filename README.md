@@ -90,6 +90,13 @@ A development or check run, under `results/dev/`, which git ignores:
 dotnet run --project scripts/Runner -- A-postgres-down-2min --dev
 ```
 
+A run of a fix: start the AppHost with that configuration's switches, then label the run with `--config`, so its folder
+can't be mistaken for the baseline (`results/A-postgres-down-2min-cfg2a-{timestamp}/`):
+
+```bash
+dotnet run --project scripts/Runner -- A-postgres-down-2min --config 2a
+```
+
 ```bash
 dotnet run --project scripts/Runner -- emulator-check
 ```
@@ -119,8 +126,9 @@ minutes.
 
 Each run writes to `results/{scenario}-{timestamp}/`, which git keeps. With `--dev` it writes to
 `results/dev/{scenario}-{timestamp}/` instead, which git ignores: use it for every run the post doesn't report. The
-`scenario-*` runs started from the dashboard pass `--dev`, so baseline runs are started from a terminal. Each run folder
-has:
+`scenario-*` runs started from the dashboard pass `--dev`, so baseline runs are started from a terminal.
+`--config <label>` adds `-cfg<label>` after the scenario name and writes the label to `config.json` (`defaults`
+without it). Each run folder has:
 
 - `timeseries.csv`: one row per second with every counter from every service and the database, plus
   `toxiproxy.accepted_clients`, the TCP connections toxiproxy accepted so far, and `runner.dlq_peeked`, the messages in

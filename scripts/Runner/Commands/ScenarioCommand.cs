@@ -5,22 +5,26 @@ internal sealed class ScenarioCommand
     private readonly List<Dictionary<string, string>> _samples = [];
     private readonly ExperimentClients                _clients;
     private readonly string                           _resultsRoot;
+    // The --config label, null for a defaults run.
+    private readonly string?                          _configuration;
 
     private string  _phase = "setup";
     private double? _faultRemovedAtSeconds;
     // Written by CountDeadLettersEverySecondAsync; -1 until the first count.
     private long    _deadLettered = -1;
 
-    public ScenarioCommand(ExperimentClients clients, string resultsRoot)
+    public ScenarioCommand(ExperimentClients clients, string resultsRoot, string? configuration)
     {
-        _clients     = clients;
-        _resultsRoot = resultsRoot;
+        _clients       = clients;
+        _resultsRoot   = resultsRoot;
+        _configuration = configuration;
     }
 
     public async Task<int> RunAsync(Scenario scenario, CancellationToken cancellationToken)
     {
         var startedAt  = DateTimeOffset.UtcNow;
-        var resultsDir = Path.Combine(_resultsRoot, $"{scenario.Name}-{startedAt:yyyyMMdd-HHmmss}");
+        var suffix     = _configuration is null ? "" : $"-cfg{_configuration}";
+        var resultsDir = Path.Combine(_resultsRoot, $"{scenario.Name}{suffix}-{startedAt:yyyyMMdd-HHmmss}");
         Directory.CreateDirectory(resultsDir);
         Log($"Scenario {scenario.Name}: results in {resultsDir}");
 
@@ -174,7 +178,8 @@ internal sealed class ScenarioCommand
     {
         var config = new JsonObject
         {
-            ["scenario"] = JsonSerializer.SerializeToNode(scenario, JsonDefaults.Options),
+            ["scenario"]      = JsonSerializer.SerializeToNode(scenario, JsonDefaults.Options),
+            ["configuration"] = _configuration ?? "defaults",
             ["runner"] = JsonSerializer.SerializeToNode(
                 _clients.Settings with
                 {

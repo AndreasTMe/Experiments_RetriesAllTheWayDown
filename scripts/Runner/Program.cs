@@ -1,13 +1,14 @@
 ﻿// Usage:
 //   Runner <scenario>             run scenarios/<scenario>.json, e.g. Runner smoke; results go to results/
 //   Runner <scenario> --dev       the same, but results go to results/dev/, which git ignores
+//   Runner <scenario> --config 2a the same, labelled with the AppHost's configuration: results/<scenario>-cfg2a-*
 //   Runner emulator-check         check the emulator's delivery behaviour
 //   Runner faults <command>       apply or remove a fault by hand (see FaultsCommand.Usage)
 //   Runner list                   list the scenarios
 
 if (args.Length == 0)
 {
-    Console.WriteLine("Usage: Runner <scenario> [--dev] | emulator-check | faults <command> | list");
+    Console.WriteLine("Usage: Runner <scenario> [--dev] [--config <label>] | emulator-check | faults <command> | list");
     return 2;
 }
 
@@ -56,7 +57,19 @@ try
             var resultsRoot = dev
                 ? Path.Combine(repoRoot, "results", "dev")
                 : Path.Combine(repoRoot, "results");
-            return await new ScenarioCommand(clients, resultsRoot).RunAsync(Scenario.Load(path), cancellationToken);
+
+            // --config labels a run with the configuration the AppHost was started with, so a fix's runs can't be
+            // mistaken for the baseline. The switches themselves are read back into config.json either way.
+            var configIndex = Array.IndexOf(args, "--config");
+            var configuration = configIndex < 0 ? null : args.ElementAtOrDefault(configIndex + 1);
+            if (configIndex >= 0 && (configuration is null || !configuration.All(char.IsAsciiLetterOrDigit)))
+            {
+                Console.WriteLine("--config needs a label of letters and digits, e.g. --config 2a");
+                return 2;
+            }
+
+            return await new ScenarioCommand(clients, resultsRoot, configuration)
+                .RunAsync(Scenario.Load(path), cancellationToken);
     }
 }
 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
