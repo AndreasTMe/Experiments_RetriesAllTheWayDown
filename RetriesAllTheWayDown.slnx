@@ -70,6 +70,12 @@
         <File Path="results/B-postgres-slow-15s-cfg2b-20261027-225458/summary.json" />
         <File Path="results/B-postgres-slow-15s-cfg2b-20261027-225458/timeseries.csv" />
     </Folder>
+    <Folder Name="/results/B-postgres-slow-15s-cfg3-20261027-232549/">
+        <File Path="results/B-postgres-slow-15s-cfg3-20261027-232549/config.json" />
+        <File Path="results/B-postgres-slow-15s-cfg3-20261027-232549/messages.csv" />
+        <File Path="results/B-postgres-slow-15s-cfg3-20261027-232549/summary.json" />
+        <File Path="results/B-postgres-slow-15s-cfg3-20261027-232549/timeseries.csv" />
+    </Folder>
     <Folder Name="/results/C-api-errors-20pct-20261026-231751/">
         <File Path="results/C-api-errors-20pct-20261026-231751/config.json" />
         <File Path="results/C-api-errors-20pct-20261026-231751/messages.csv" />
