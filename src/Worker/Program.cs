@@ -11,6 +11,8 @@ metrics.Declare(
     "received",
     "handler_succeeded",
     "abandoned",
+    "rescheduled",
+    "dead_lettered_by_worker",
     "complete_failed",
     "abandon_failed",
     "lock_lost",

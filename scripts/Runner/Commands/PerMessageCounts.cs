@@ -22,7 +22,7 @@ internal sealed class PerMessageCounts
     ];
 
     // Reported next to the layers, but not part of the clean-path test.
-    private static readonly string[] Extras = ["abandoned", "callerGoneWhileRunning"];
+    private static readonly string[] Extras = ["abandoned", "rescheduled", "callerGoneWhileRunning"];
 
     private readonly Dictionary<string, Dictionary<string, long>> _messages;
 
@@ -123,6 +123,7 @@ internal sealed class PerMessageCounts
                     ["efRetries"]              = Get(api, id, "ef_retries"),
                     ["rows"]                   = rows[id]?.GetValue<long>() ?? 0,
                     ["abandoned"]              = Get(worker, id, "abandoned"),
+                    ["rescheduled"]            = Get(worker, id, "rescheduled"),
                     ["callerGoneWhileRunning"] = Get(api, id, "orders_caller_gone_while_running"),
                 });
 

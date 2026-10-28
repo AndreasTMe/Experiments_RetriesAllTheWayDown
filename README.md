@@ -172,6 +172,7 @@ AppHost. The Worker switches can also be changed at runtime with `PUT /admin/exp
 | `AlwaysThrow`        | false   | true: the Worker handler throws before calling the API                  |
 | `HoldMessageMs`      | 0       | The Worker handler waits this long before calling the API               |
 | `DisableLockRenewal` | false   | true: `MaxAutoLockRenewalDuration = 0`                                  |
+| `DelayedRedelivery`  | false   | true: a failed message is scheduled again, 5 s doubling to 5 min        |
 | `MaxDeliveryCount`   | 10      | The queue's `MaxDeliveryCount`; 1 turns Service Bus redelivery off      |
 | `MaxConcurrentCalls` | 1       | The Worker processor's `MaxConcurrentCalls`, the SDK default            |
 

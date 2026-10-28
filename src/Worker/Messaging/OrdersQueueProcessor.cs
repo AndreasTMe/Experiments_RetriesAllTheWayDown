@@ -4,10 +4,18 @@ namespace Worker.Messaging;
 // SDK abandons the message (AutoCompleteMessages is true by default), so Service Bus redelivers it.
 internal sealed class OrdersQueueProcessor : IHostedService
 {
+    // The attempt number a rescheduled copy carries; the first delivery has none.
+    private const string AttemptProperty = "experiment-attempt";
+
     private static readonly Histogram<int> DeliveryCountHistogram =
         ExperimentMetrics.Meter.CreateHistogram<int>("experiment.worker.delivery_count");
 
+    // 5 s, doubling, at most 5 min: 5, 10, 20, 40, 80, 160, 300, 300, 300 s, about 20 min over 10 attempts.
+    private static readonly TimeSpan FirstRedeliveryDelay = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan MaxRedeliveryDelay   = TimeSpan.FromMinutes(5);
+
     private readonly ServiceBusClient              _client;
+    private readonly ServiceBusSender              _sender;
     private readonly IServiceProvider              _services;
     private readonly ExperimentMetrics             _metrics;
     private readonly DeliveryLog                   _deliveryLog;
@@ -32,6 +40,7 @@ internal sealed class OrdersQueueProcessor : IHostedService
         ILogger<OrdersQueueProcessor> logger)
     {
         _client      = client;
+        _sender      = client.CreateSender("orders");
         _services    = services;
         _experiment  = experiment;
         _metrics     = metrics;
@@ -126,6 +135,10 @@ internal sealed class OrdersQueueProcessor : IHostedService
             await ordersApi.CreateOrderAsync(message, args.CancellationToken);
             _metrics.Add("handler_succeeded");
         }
+        catch (Exception exception) when (settings.DelayedRedelivery && !args.CancellationToken.IsCancellationRequested)
+        {
+            await RedeliverLaterAsync(args, settings, exception);
+        }
         catch
         {
             _metrics.Add("abandoned");
@@ -135,6 +148,44 @@ internal sealed class OrdersQueueProcessor : IHostedService
         {
             Interlocked.Decrement(ref _inFlight);
         }
+    }
+
+    // Configuration 6. Instead of abandoning, which Service Bus redelivers at once, send a copy of the message
+    // scheduled for later and let the original complete. At MaxDeliveryCount attempts the Worker dead-letters the
+    // message itself, so the budget is the same 10 tries as with defaults. If scheduling fails, the handler throws
+    // and the SDK abandons.
+    private async Task RedeliverLaterAsync(
+        ProcessMessageEventArgs args,
+        ExperimentSettings settings,
+        Exception exception)
+    {
+        var message = args.Message;
+        var attempt = message.ApplicationProperties.TryGetValue(AttemptProperty, out var value)
+            ? Convert.ToInt32(value)
+            : 1;
+
+        // The handler no longer throws, so HandleErrorAsync doesn't see the failure; record it the same way.
+        _deliveryLog.RecordError(
+            nameof(ServiceBusErrorSource.ProcessMessageCallback),
+            exception.GetType().Name,
+            exception.Message);
+
+        if (attempt >= settings.MaxDeliveryCount)
+        {
+            await args.DeadLetterMessageAsync(
+                message,
+                "DelayedRedeliveryExhausted",
+                $"Failed {attempt} attempts",
+                args.CancellationToken);
+            _metrics.Add("dead_lettered_by_worker");
+            return;
+        }
+
+        var copy = new ServiceBusMessage(message);
+        copy.ApplicationProperties[AttemptProperty] = attempt + 1;
+        var deliverAt = DateTimeOffset.UtcNow + GetRedeliveryDelay(attempt);
+        await _sender.ScheduleMessageAsync(copy, deliverAt, args.CancellationToken);
+        _metrics.Add("rescheduled");
     }
 
     private Task HandleErrorAsync(ProcessErrorEventArgs args)
@@ -177,4 +228,7 @@ internal sealed class OrdersQueueProcessor : IHostedService
 
         return Task.CompletedTask;
     }
+
+    private static TimeSpan GetRedeliveryDelay(int attempt) =>
+        TimeSpan.FromTicks(Math.Min(FirstRedeliveryDelay.Ticks << (attempt - 1), MaxRedeliveryDelay.Ticks));
 }

@@ -11,6 +11,9 @@ public sealed record ExperimentSettings
     public int  HoldMessageMs      { get; init; }
     public bool DisableLockRenewal { get; init; }
 
+    // Configuration 6: on failure the Worker schedules the message again with backoff instead of abandoning it.
+    public bool DelayedRedelivery { get; init; }
+
     // The SDK default. Only fault D raises it, from its scenario file: with 1 request in flight the API never queues.
     public int MaxConcurrentCalls { get; init; } = 1;
 
