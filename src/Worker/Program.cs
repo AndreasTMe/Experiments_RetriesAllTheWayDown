@@ -33,6 +33,20 @@ if (!experiment.Initial.HttpRetries)
         options.Retry.ShouldHandle = _ => ValueTask.FromResult(false));
 }
 
+// TunedBreaker=true: a breaker that can trip at this traffic. During an outage the Worker sends about 3 attempts per
+// 30 s (one message at a time, each attempt running to its 10 s timeout), so the default minimum of 100 requests in
+// 30 s is only reached while the window still holds the successes from before the fault, and those keep the failure
+// ratio under 10%. A minimum of 2 and a ratio of 50% trip on the failures alone; the break is 30 s, not 5 s.
+if (experiment.Initial.TunedBreaker)
+{
+    builder.Services.ConfigureAll<HttpStandardResilienceOptions>(options =>
+    {
+        options.CircuitBreaker.FailureRatio      = 0.5;
+        options.CircuitBreaker.MinimumThroughput = 2;
+        options.CircuitBreaker.BreakDuration     = TimeSpan.FromSeconds(30);
+    });
+}
+
 builder.Services.AddTransient<AttemptCountingHandler>();
 builder.Services.AddHttpClient<OrdersApiClient>(client => client.BaseAddress = new Uri("http://ordersapi"))
     .AddHttpMessageHandler<AttemptCountingHandler>();
@@ -67,7 +81,8 @@ app.MapPut(
     "/admin/experiment",
     async (ExperimentSettings settings, CancellationToken cancellationToken) =>
     {
-        // Only the Worker's own switches change at runtime; HttpRetries is fixed when the HttpClient is built.
+        // Only the Worker's own switches change at runtime; HttpRetries and TunedBreaker are fixed when the HttpClient
+        // is built.
         experiment.Current = experiment.Initial with
         {
             AlwaysThrow = settings.AlwaysThrow,
