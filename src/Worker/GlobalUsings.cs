@@ -12,6 +12,7 @@ global using Microsoft.Extensions.Logging;
 global using ServiceDefaults;
 global using ServiceDefaults.Configuration;
 global using ServiceDefaults.Counting;
+global using ServiceDefaults.Resilience;
 global using System;
 global using System.Collections.Concurrent;
 global using System.Collections.Generic;

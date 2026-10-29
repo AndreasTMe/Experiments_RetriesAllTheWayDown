@@ -18,6 +18,7 @@ metrics.Declare(
     "lock_lost",
     "other_errors",
     "http_attempts",
+    "retry_budget_denied",
     "admin_errors");
 builder.Services.AddSingleton(metrics);
 builder.Services.AddSingleton(experiment);
@@ -44,6 +45,38 @@ if (experiment.Initial.TunedBreaker)
         options.CircuitBreaker.FailureRatio      = 0.5;
         options.CircuitBreaker.MinimumThroughput = 2;
         options.CircuitBreaker.BreakDuration     = TimeSpan.FromSeconds(30);
+    });
+}
+
+// RetryBudget=true: a retry goes ahead only if the shared bucket has a token. Every first attempt adds to it. The last
+// attempt isn't checked, since it can't retry anyway.
+if (experiment.Initial.RetryBudget)
+{
+    var retryBudget = new RetryTokenBucket();
+    builder.Services.ConfigureAll<HttpStandardResilienceOptions>(options =>
+    {
+        var shouldHandle = options.Retry.ShouldHandle;
+        var maxRetries   = options.Retry.MaxRetryAttempts;
+        options.Retry.ShouldHandle = async args =>
+        {
+            if (args.AttemptNumber == 0)
+            {
+                retryBudget.RecordFirstAttempt();
+            }
+
+            if (!await shouldHandle(args) || args.AttemptNumber >= maxRetries)
+            {
+                return false;
+            }
+
+            if (retryBudget.TryTakeRetry())
+            {
+                return true;
+            }
+
+            metrics.Add("retry_budget_denied");
+            return false;
+        };
     });
 }
 
@@ -81,8 +114,8 @@ app.MapPut(
     "/admin/experiment",
     async (ExperimentSettings settings, CancellationToken cancellationToken) =>
     {
-        // Only the Worker's own switches change at runtime; HttpRetries and TunedBreaker are fixed when the HttpClient
-        // is built.
+        // Only the Worker's own switches change at runtime; HttpRetries, TunedBreaker and RetryBudget are fixed when
+        // the HttpClient is built.
         experiment.Current = experiment.Initial with
         {
             AlwaysThrow = settings.AlwaysThrow,

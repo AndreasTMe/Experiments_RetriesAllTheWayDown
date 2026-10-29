@@ -14,6 +14,9 @@ public sealed record ExperimentSettings
     // Configuration 4: the Worker's circuit breaker tuned to trip at this traffic. See the Worker's Program.cs.
     public bool TunedBreaker { get; init; }
 
+    // Configuration 5: Worker HTTP retries and API EF retries each draw on a retry budget (RetryTokenBucket).
+    public bool RetryBudget { get; init; }
+
     // Configuration 6: on failure the Worker schedules the message again with backoff instead of abandoning it.
     public bool DelayedRedelivery { get; init; }
 
