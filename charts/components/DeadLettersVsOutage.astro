@@ -1,0 +1,126 @@
+---
+// Chart 3: messages dead-lettered against outage length, immediate against delayed redelivery.
+import data from "./data/dead-letters-vs-outage.json";
+
+const width = 720;
+const height = 358;
+const margin = { top: 16, right: 132, bottom: 72, left: 44 };
+const plotWidth = width - margin.left - margin.right;
+const plotHeight = height - margin.top - margin.bottom;
+
+const points = data.points;
+const maxValue = Math.max(...points.map((point) => point.immediate), 1);
+const ticks = Array.from({ length: maxValue + 1 }, (_, value) => value);
+
+// The outage lengths aren't evenly spaced, so the x axis is a category axis, not a time scale.
+const x = (index: number) => margin.left + (index / (points.length - 1)) * plotWidth;
+const y = (value: number) => margin.top + plotHeight - (value / maxValue) * plotHeight;
+
+const series = [
+    { key: "immediate", name: "Immediate", className: "immediate" },
+    { key: "delayed", name: "Delayed", className: "delayed" },
+] as const;
+
+const linePath = (key: "immediate" | "delayed") =>
+    points.map((point, index) => `${index === 0 ? "M" : "L"}${x(index)} ${y(point[key])}`).join(" ");
+
+const last = points[points.length - 1];
+const summary = `Line chart. With immediate redelivery, dead letters rise with outage length: ${points
+    .map((point) => `${point.immediate} at ${point.outage}`)
+    .join(", ")}. With delayed redelivery there are none at any length. Measured on the ${data.measuredOn}.`;
+---
+
+<figure class="chart">
+    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={summary}>
+        {
+            ticks.map((value) => (
+                <g>
+                    <line class="grid" x1={margin.left} x2={margin.left + plotWidth} y1={y(value)} y2={y(value)} />
+                    <text class="tick" x={margin.left - 12} y={y(value)} text-anchor="end" dominant-baseline="middle">
+                        {value}
+                    </text>
+                </g>
+            ))
+        }
+        {
+            points.map((point, index) => (
+                <text class="tick" x={x(index)} y={margin.top + plotHeight + 32} text-anchor="middle">
+                    {point.outage}
+                </text>
+            ))
+        }
+        <text class="axis-title" x={margin.left + plotWidth / 2} y={height - 8} text-anchor="middle">Outage length</text>
+        {series.map(({ key, className }) => <path class={`line ${className}`} d={linePath(key)} />)}
+        {
+            series.map(({ key, name, className }) =>
+                points.map((point, index) => (
+                    <circle class={`marker ${className}`} cx={x(index)} cy={y(point[key])} r="5">
+                        <title>{`${name} redelivery, ${point.outage} outage: ${point[key]} dead-lettered`}</title>
+                    </circle>
+                )),
+            )
+        }
+        <text class="label" x={x(points.length - 1) + 12} y={y(last.immediate)} dominant-baseline="middle">Immediate</text>
+        <text class="label" x={x(points.length - 1) + 12} y={y(last.delayed)} dominant-baseline="middle">Delayed</text>
+    </svg>
+    <figcaption>Messages dead-lettered by outage length, immediate against delayed redelivery. Measured on the {data.measuredOn}.</figcaption>
+</figure>
+
+<style>
+    .chart {
+        margin: 2em 0;
+    }
+    svg {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+    .grid {
+        stroke: var(--line);
+    }
+    .tick,
+    .axis-title {
+        fill: var(--muted);
+        font-family: var(--font-display);
+        font-size: 15px;
+    }
+    .label {
+        fill: var(--fg);
+        font-family: var(--font-display);
+        font-size: 15px;
+    }
+    .line {
+        fill: none;
+        stroke-width: 2;
+    }
+    .line.immediate {
+        stroke: var(--fg);
+        stroke-dasharray: 6 4;
+    }
+    .line.delayed {
+        stroke: var(--accent);
+    }
+    .marker {
+        stroke: var(--bg);
+        stroke-width: 2;
+    }
+    .marker.immediate {
+        fill: var(--fg);
+    }
+    .marker.delayed {
+        fill: var(--accent);
+    }
+    /* The SVG scales down on a phone, so its text starts larger there. */
+    @media (max-width: 520px) {
+        .tick,
+        .axis-title,
+        .label {
+            font-size: 24px;
+        }
+    }
+    figcaption {
+        margin-top: 0.5em;
+        color: var(--muted);
+        font-size: 0.875rem;
+    }
+</style>

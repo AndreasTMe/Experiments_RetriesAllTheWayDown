@@ -1,0 +1,55 @@
+{
+    "measuredOn": "Service Bus emulator",
+    "points": [
+        {
+            "outage": "30 s",
+            "outageSeconds": 30,
+            "immediate": 0,
+            "delayed": 0,
+            "runs": {
+                "immediate": "A-postgres-down-30s-20261027-175740",
+                "delayed": "A-postgres-down-30s-cfg6-20261028-224838"
+            }
+        },
+        {
+            "outage": "2 min",
+            "outageSeconds": 120,
+            "immediate": 0,
+            "delayed": 0,
+            "runs": {
+                "immediate": "A-postgres-down-2min-20261026-230331",
+                "delayed": "A-postgres-down-2min-cfg6-20261028-223817"
+            }
+        },
+        {
+            "outage": "5 min",
+            "outageSeconds": 300,
+            "immediate": 1,
+            "delayed": 0,
+            "runs": {
+                "immediate": "A-postgres-down-5min-20261027-175925",
+                "delayed": "A-postgres-down-5min-cfg6-20261028-225023"
+            }
+        },
+        {
+            "outage": "10 min",
+            "outageSeconds": 600,
+            "immediate": 2,
+            "delayed": 0,
+            "runs": {
+                "immediate": "A-postgres-down-10min-20261027-180620",
+                "delayed": "A-postgres-down-10min-cfg6-20261028-225718"
+            }
+        },
+        {
+            "outage": "20 min",
+            "outageSeconds": 1200,
+            "immediate": 4,
+            "delayed": 0,
+            "runs": {
+                "immediate": "A-postgres-down-20min-20261027-181915",
+                "delayed": "A-postgres-down-20min-cfg6-20261028-231015"
+            }
+        }
+    ]
+}
