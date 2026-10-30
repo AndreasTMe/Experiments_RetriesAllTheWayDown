@@ -1,0 +1,197 @@
+---
+// Chart 1: attempts per message at each layer for faults A and B, defaults against the fix.
+// Each panel is its own SVG sized close to its column, so the text stays readable on a phone.
+import data from "./data/attempts-per-layer.json";
+
+const width = 340;
+const labelWidth = 96;
+const valueWidth = 44;
+const barHeight = 13;
+const barGap = 2;
+const groupGap = 14;
+const groupHeight = barHeight * 2 + barGap;
+const barArea = width - labelWidth - valueWidth;
+
+const views = [
+    {
+        key: "worst",
+        title: "The worst message",
+        format: (value: number) => String(value),
+    },
+    {
+        key: "average",
+        title: "The average across every message",
+        format: (value: number) => value.toFixed(2),
+    },
+] as const;
+
+type ViewKey = (typeof views)[number]["key"];
+
+const series = [
+    { key: "defaults", name: "Defaults", className: "defaults" },
+    { key: "fixed", name: "3, 4 and 6 together", className: "fixed" },
+] as const;
+
+// Each view shares one scale across both faults, so its panels compare directly.
+const maxFor = (view: ViewKey) =>
+    Math.max(...data.faults.flatMap((fault) => [...fault.defaults, ...fault.fixed].map((row) => row[view])));
+
+const height = data.faults[0].defaults.length * (groupHeight + groupGap) - groupGap;
+const groupY = (index: number) => index * (groupHeight + groupGap);
+---
+
+<figure class="chart">
+    <ul class="legend">
+        {
+            series.map(({ name, className }) => (
+                <li>
+                    <span class={`swatch ${className}`} />
+                    {name}
+                </li>
+            ))
+        }
+    </ul>
+    {
+        views.map(({ key: view, title, format }) => (
+            <div class="view">
+                <div class="view-title">{title}</div>
+                <div class="panels">
+                    {data.faults.map((fault) => (
+                        <div>
+                            <p>{fault.fault}</p>
+                            <svg
+                                viewBox={`0 0 ${width} ${height}`}
+                                role="img"
+                                aria-label={`${title}, ${fault.fault}. ${fault.defaults
+                                    .map(
+                                        (row, index) =>
+                                            `${row.layer}: defaults ${format(row[view])}, fixed ${format(fault.fixed[index][view])}`,
+                                    )
+                                    .join("; ")}.`}
+                            >
+                                {fault.defaults.map((row, index) => (
+                                    <g>
+                                        <text
+                                            class="label"
+                                            x="0"
+                                            y={groupY(index) + groupHeight / 2}
+                                            dominant-baseline="middle"
+                                        >
+                                            {row.layer}
+                                        </text>
+                                        {series.map(({ key, name, className }, seriesIndex) => {
+                                            const value = fault[key][index][view];
+                                            const barWidth = (value / maxFor(view)) * barArea;
+                                            const y = groupY(index) + seriesIndex * (barHeight + barGap);
+                                            return (
+                                                <g>
+                                                    <rect
+                                                        class={`bar ${className}`}
+                                                        x={labelWidth}
+                                                        y={y}
+                                                        width={barWidth}
+                                                        height={barHeight}
+                                                        rx="2"
+                                                    >
+                                                        <title>{`${name}, ${row.layer}: ${format(value)}`}</title>
+                                                    </rect>
+                                                    <text
+                                                        class="value"
+                                                        x={labelWidth + barWidth + 5}
+                                                        y={y + barHeight / 2}
+                                                        dominant-baseline="middle"
+                                                    >
+                                                        {format(value)}
+                                                    </text>
+                                                </g>
+                                            );
+                                        })}
+                                    </g>
+                                ))}
+                            </svg>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        ))
+    }
+    <figcaption>
+        Attempts per message at each layer, defaults against configurations 3, 4 and 6 together. Measured on the {
+            data.measuredOn
+        }.
+    </figcaption>
+</figure>
+
+<style>
+    .chart {
+        margin: 2em 0;
+    }
+    .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25em 1.25em;
+        margin: 0 0 1em;
+        padding: 0;
+        list-style: none;
+        font-size: 0.875rem;
+    }
+    .legend li {
+        display: flex;
+        align-items: center;
+        gap: 0.4em;
+    }
+    .swatch {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+    }
+    .swatch.defaults,
+    .bar.defaults {
+        background: var(--fg);
+        fill: var(--fg);
+    }
+    .swatch.fixed,
+    .bar.fixed {
+        background: var(--accent);
+        fill: var(--accent);
+    }
+    .view {
+        margin-bottom: 1.5em;
+    }
+    .view-title {
+        margin: 0 0 0.5em;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    .panels {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1em 24px;
+    }
+    p {
+        margin: 0 0 0.5em;
+        color: var(--muted);
+        font-size: 0.875rem;
+    }
+    svg {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+    .label,
+    .value {
+        font-family: var(--font-display);
+        font-size: 13px;
+    }
+    .label {
+        fill: var(--muted);
+    }
+    .value {
+        fill: var(--fg);
+    }
+    figcaption {
+        margin-top: 0.5em;
+        color: var(--muted);
+        font-size: 0.875rem;
+    }
+</style>

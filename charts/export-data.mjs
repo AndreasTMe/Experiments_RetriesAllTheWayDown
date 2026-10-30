@@ -16,6 +16,27 @@ const outages = [
     { label: "20 min", immediate: "A-postgres-down-20min-20261027-181915", delayed: "A-postgres-down-20min-cfg6-20261028-231015" },
 ];
 
+const faults = [
+    {
+        fault: "Fault A: Postgres down for 2 minutes",
+        defaults: "A-postgres-down-2min-20261026-230331",
+        fixed: "A-postgres-down-2min-cfg346-20261030-144830",
+    },
+    {
+        fault: "Fault B: Postgres 15 s slower for 2 minutes",
+        defaults: "B-postgres-slow-15s-20261026-231055",
+        fixed: "B-postgres-slow-15s-cfg346-20261030-145153",
+    },
+];
+
+const layers = [
+    { key: "serviceBusDeliveries", label: "Deliveries" },
+    { key: "httpAttemptsFromWorker", label: "HTTP attempts" },
+    { key: "dbConnectionOpens", label: "DB opens" },
+    { key: "dbCommands", label: "DB commands" },
+    { key: "rows", label: "Rows" },
+];
+
 function readRun(run) {
     const read = (file) => JSON.parse(readFileSync(join(resultsDir, run, file), "utf8"));
     return { summary: read("summary.json"), config: read("config.json") };
@@ -45,5 +66,36 @@ function exportDeadLettersVsOutage() {
     };
 }
 
+function layerCounts(run, expectFixed) {
+    const { summary, config } = readRun(run);
+    if (!summary.drained) {
+        throw new Error(`${run} did not drain`);
+    }
+    const { passCancellation, tunedBreaker, delayedRedelivery, retryBudget } = config.worker.experiment;
+    const isFixed = Boolean(passCancellation && tunedBreaker && delayedRedelivery);
+    const isDefaults = !passCancellation && !tunedBreaker && !delayedRedelivery;
+    if ((expectFixed ? !isFixed : !isDefaults) || retryBudget) {
+        throw new Error(`${run} has the wrong experiment settings`);
+    }
+    return layers.map(({ key, label }) => ({
+        layer: label,
+        worst: summary.hitMessages.perLayer[key].max,
+        average: summary.attemptsPerMessage[key].perMessage,
+    }));
+}
+
+function exportAttemptsPerLayer() {
+    return {
+        measuredOn: "Service Bus emulator",
+        faults: faults.map(({ fault, defaults, fixed }) => ({
+            fault,
+            defaults: layerCounts(defaults, false),
+            fixed: layerCounts(fixed, true),
+            runs: { defaults, fixed },
+        })),
+    };
+}
+
 mkdirSync(dataDir, { recursive: true });
+writeFileSync(join(dataDir, "attempts-per-layer.json"), JSON.stringify(exportAttemptsPerLayer(), null, 4) + "\n");
 writeFileSync(join(dataDir, "dead-letters-vs-outage.json"), JSON.stringify(exportDeadLettersVsOutage(), null, 4) + "\n");

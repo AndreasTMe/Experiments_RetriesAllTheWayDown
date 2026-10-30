@@ -1,0 +1,127 @@
+{
+    "measuredOn": "Service Bus emulator",
+    "faults": [
+        {
+            "fault": "Fault A: Postgres down for 2 minutes",
+            "defaults": [
+                {
+                    "layer": "Deliveries",
+                    "worst": 5,
+                    "average": 1.002
+                },
+                {
+                    "layer": "HTTP attempts",
+                    "worst": 13,
+                    "average": 1.007
+                },
+                {
+                    "layer": "DB opens",
+                    "worst": 74,
+                    "average": 1.041
+                },
+                {
+                    "layer": "DB commands",
+                    "worst": 10,
+                    "average": 1.005
+                },
+                {
+                    "layer": "Rows",
+                    "worst": 9,
+                    "average": 1.004
+                }
+            ],
+            "fixed": [
+                {
+                    "layer": "Deliveries",
+                    "worst": 4,
+                    "average": 1.7
+                },
+                {
+                    "layer": "HTTP attempts",
+                    "worst": 4,
+                    "average": 1.003
+                },
+                {
+                    "layer": "DB opens",
+                    "worst": 7,
+                    "average": 1.006
+                },
+                {
+                    "layer": "DB commands",
+                    "worst": 2,
+                    "average": 1.001
+                },
+                {
+                    "layer": "Rows",
+                    "worst": 1,
+                    "average": 1
+                }
+            ],
+            "runs": {
+                "defaults": "A-postgres-down-2min-20261026-230331",
+                "fixed": "A-postgres-down-2min-cfg346-20261030-144830"
+            }
+        },
+        {
+            "fault": "Fault B: Postgres 15 s slower for 2 minutes",
+            "defaults": [
+                {
+                    "layer": "Deliveries",
+                    "worst": 5,
+                    "average": 1.002
+                },
+                {
+                    "layer": "HTTP attempts",
+                    "worst": 13,
+                    "average": 1.007
+                },
+                {
+                    "layer": "DB opens",
+                    "worst": 32,
+                    "average": 1.017
+                },
+                {
+                    "layer": "DB commands",
+                    "worst": 13,
+                    "average": 1.007
+                },
+                {
+                    "layer": "Rows",
+                    "worst": 13,
+                    "average": 1.007
+                }
+            ],
+            "fixed": [
+                {
+                    "layer": "Deliveries",
+                    "worst": 4,
+                    "average": 1.649
+                },
+                {
+                    "layer": "HTTP attempts",
+                    "worst": 4,
+                    "average": 1.003
+                },
+                {
+                    "layer": "DB opens",
+                    "worst": 4,
+                    "average": 1.003
+                },
+                {
+                    "layer": "DB commands",
+                    "worst": 2,
+                    "average": 1.001
+                },
+                {
+                    "layer": "Rows",
+                    "worst": 2,
+                    "average": 1.001
+                }
+            ],
+            "runs": {
+                "defaults": "B-postgres-slow-15s-20261026-231055",
+                "fixed": "B-postgres-slow-15s-cfg346-20261030-145153"
+            }
+        }
+    ]
+}

@@ -1,10 +1,14 @@
 <Solution>
-    <Folder Name="/src/">
-        <Project Path="src/AppHost/AppHost.csproj" />
-        <Project Path="src/OrdersApi/OrdersApi.csproj" />
-        <Project Path="src/Producer/Producer.csproj" />
-        <Project Path="src/ServiceDefaults/ServiceDefaults.csproj" />
-        <Project Path="src/Worker/Worker.csproj" />
+    <Folder Name="/charts/">
+        <File Path="charts/export-data.mjs" />
+    </Folder>
+    <Folder Name="/charts/components/">
+        <File Path="charts/components/AttemptsPerLayer.astro" />
+        <File Path="charts/components/DeadLettersVsOutage.astro" />
+    </Folder>
+    <Folder Name="/charts/components/data/">
+        <File Path="charts/components/data/attempts-per-layer.json" />
+        <File Path="charts/components/data/dead-letters-vs-outage.json" />
     </Folder>
     <Folder Name="/docs/">
         <File Path="docs/defaults.md" />
@@ -33,6 +37,12 @@
         <File Path="results/A-postgres-down-2min-cfg4-20261029-175525/messages.csv" />
         <File Path="results/A-postgres-down-2min-cfg4-20261029-175525/summary.json" />
         <File Path="results/A-postgres-down-2min-cfg4-20261029-175525/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/A-postgres-down-2min-cfg346-20261030-144830/">
+        <File Path="results/A-postgres-down-2min-cfg346-20261030-144830/config.json" />
+        <File Path="results/A-postgres-down-2min-cfg346-20261030-144830/messages.csv" />
+        <File Path="results/A-postgres-down-2min-cfg346-20261030-144830/summary.json" />
+        <File Path="results/A-postgres-down-2min-cfg346-20261030-144830/timeseries.csv" />
     </Folder>
     <Folder Name="/results/A-postgres-down-2min-cfg46-20261029-224154/">
         <File Path="results/A-postgres-down-2min-cfg46-20261029-224154/config.json" />
@@ -130,6 +140,12 @@
         <File Path="results/B-postgres-slow-15s-cfg4-20261029-175943/summary.json" />
         <File Path="results/B-postgres-slow-15s-cfg4-20261029-175943/timeseries.csv" />
     </Folder>
+    <Folder Name="/results/B-postgres-slow-15s-cfg346-20261030-145153/">
+        <File Path="results/B-postgres-slow-15s-cfg346-20261030-145153/config.json" />
+        <File Path="results/B-postgres-slow-15s-cfg346-20261030-145153/messages.csv" />
+        <File Path="results/B-postgres-slow-15s-cfg346-20261030-145153/summary.json" />
+        <File Path="results/B-postgres-slow-15s-cfg346-20261030-145153/timeseries.csv" />
+    </Folder>
     <Folder Name="/results/B-postgres-slow-15s-cfg46-20261029-224513/">
         <File Path="results/B-postgres-slow-15s-cfg46-20261029-224513/config.json" />
         <File Path="results/B-postgres-slow-15s-cfg46-20261029-224513/messages.csv" />
@@ -204,5 +220,12 @@
     <Folder Name="/scripts/">
         <File Path="scripts/faults.ps1" />
         <Project Path="scripts/Runner/Runner.csproj" />
+    </Folder>
+    <Folder Name="/src/">
+        <Project Path="src/AppHost/AppHost.csproj" />
+        <Project Path="src/OrdersApi/OrdersApi.csproj" />
+        <Project Path="src/Producer/Producer.csproj" />
+        <Project Path="src/ServiceDefaults/ServiceDefaults.csproj" />
+        <Project Path="src/Worker/Worker.csproj" />
     </Folder>
 </Solution>
