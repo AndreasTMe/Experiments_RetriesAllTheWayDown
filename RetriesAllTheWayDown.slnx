@@ -13,6 +13,10 @@
     <Folder Name="/docs/">
         <File Path="docs/defaults.md" />
     </Folder>
+    <Folder Name="/infra/">
+        <File Path="infra/main.bicep" />
+        <File Path="infra/servicebus.bicep" />
+    </Folder>
     <Folder Name="/results/" />
     <Folder Name="/results/A-postgres-down-2min-20261026-230331/">
         <File Path="results/A-postgres-down-2min-20261026-230331/config.json" />
