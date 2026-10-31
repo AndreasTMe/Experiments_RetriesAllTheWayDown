@@ -4,14 +4,19 @@
     </Folder>
     <Folder Name="/charts/components/">
         <File Path="charts/components/AttemptsPerLayer.astro" />
+        <File Path="charts/components/BrownoutMessages.astro" />
         <File Path="charts/components/DeadLettersVsOutage.astro" />
     </Folder>
     <Folder Name="/charts/components/data/">
         <File Path="charts/components/data/attempts-per-layer.json" />
+        <File Path="charts/components/data/brownout-messages.json" />
         <File Path="charts/components/data/dead-letters-vs-outage.json" />
     </Folder>
     <Folder Name="/docs/">
         <File Path="docs/defaults.md" />
+    </Folder>
+    <Folder Name="/images/">
+        <File Path="images/04-trace-waterfall.jpg" />
     </Folder>
     <Folder Name="/infra/">
         <File Path="infra/main.bicep" />
@@ -65,6 +70,18 @@
         <File Path="results/A-postgres-down-2min-cfg6-20261028-223817/messages.csv" />
         <File Path="results/A-postgres-down-2min-cfg6-20261028-223817/summary.json" />
         <File Path="results/A-postgres-down-2min-cfg6-20261028-223817/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/A-postgres-down-2min-cloud-20261031-173923/">
+        <File Path="results/A-postgres-down-2min-cloud-20261031-173923/config.json" />
+        <File Path="results/A-postgres-down-2min-cloud-20261031-173923/messages.csv" />
+        <File Path="results/A-postgres-down-2min-cloud-20261031-173923/summary.json" />
+        <File Path="results/A-postgres-down-2min-cloud-20261031-173923/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/A-postgres-down-2min-cloud-20261031-222857/">
+        <File Path="results/A-postgres-down-2min-cloud-20261031-222857/config.json" />
+        <File Path="results/A-postgres-down-2min-cloud-20261031-222857/messages.csv" />
+        <File Path="results/A-postgres-down-2min-cloud-20261031-222857/summary.json" />
+        <File Path="results/A-postgres-down-2min-cloud-20261031-222857/timeseries.csv" />
     </Folder>
     <Folder Name="/results/A-postgres-down-5min-20261027-175925/">
         <File Path="results/A-postgres-down-5min-20261027-175925/config.json" />
@@ -209,6 +226,30 @@
         <File Path="results/C-api-errors-20pct-cfg6-20261028-224453/messages.csv" />
         <File Path="results/C-api-errors-20pct-cfg6-20261028-224453/summary.json" />
         <File Path="results/C-api-errors-20pct-cfg6-20261028-224453/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/D-brownout-cfg346-cloud-20261031-172815/">
+        <File Path="results/D-brownout-cfg346-cloud-20261031-172815/config.json" />
+        <File Path="results/D-brownout-cfg346-cloud-20261031-172815/messages.csv" />
+        <File Path="results/D-brownout-cfg346-cloud-20261031-172815/summary.json" />
+        <File Path="results/D-brownout-cfg346-cloud-20261031-172815/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/D-brownout-cfg346-cloud-20261031-220612/">
+        <File Path="results/D-brownout-cfg346-cloud-20261031-220612/config.json" />
+        <File Path="results/D-brownout-cfg346-cloud-20261031-220612/messages.csv" />
+        <File Path="results/D-brownout-cfg346-cloud-20261031-220612/summary.json" />
+        <File Path="results/D-brownout-cfg346-cloud-20261031-220612/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/D-brownout-cloud-20261031-171829/">
+        <File Path="results/D-brownout-cloud-20261031-171829/config.json" />
+        <File Path="results/D-brownout-cloud-20261031-171829/messages.csv" />
+        <File Path="results/D-brownout-cloud-20261031-171829/summary.json" />
+        <File Path="results/D-brownout-cloud-20261031-171829/timeseries.csv" />
+    </Folder>
+    <Folder Name="/results/D-brownout-cloud-20261031-222044/">
+        <File Path="results/D-brownout-cloud-20261031-222044/config.json" />
+        <File Path="results/D-brownout-cloud-20261031-222044/messages.csv" />
+        <File Path="results/D-brownout-cloud-20261031-222044/summary.json" />
+        <File Path="results/D-brownout-cloud-20261031-222044/timeseries.csv" />
     </Folder>
     <Folder Name="/scenarios/">
         <File Path="scenarios/A-postgres-down-10min.json" />

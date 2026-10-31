@@ -1,0 +1,1038 @@
+{
+    "measuredOn": "real Service Bus namespace",
+    "spike": {
+        "fromSeconds": 90,
+        "toSeconds": 120
+    },
+    "faultRemovedAtSeconds": 330,
+    "defaults": {
+        "run": "D-brownout-cloud-20261031-222044",
+        "recoverySeconds": 1,
+        "samples": [
+            {
+                "seconds": 0,
+                "sent": 0,
+                "completed": 0,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 5,
+                "sent": 8,
+                "completed": 8,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 10,
+                "sent": 16,
+                "completed": 16,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 15,
+                "sent": 24,
+                "completed": 24,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 20,
+                "sent": 32,
+                "completed": 32,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 25,
+                "sent": 40,
+                "completed": 40,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 30,
+                "sent": 48,
+                "completed": 48,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 35,
+                "sent": 56,
+                "completed": 55,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 40,
+                "sent": 64,
+                "completed": 63,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 45,
+                "sent": 72,
+                "completed": 71,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 50,
+                "sent": 80,
+                "completed": 79,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 55,
+                "sent": 88,
+                "completed": 87,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 60,
+                "sent": 96,
+                "completed": 95,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 65,
+                "sent": 104,
+                "completed": 103,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 70,
+                "sent": 112,
+                "completed": 111,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 75,
+                "sent": 120,
+                "completed": 119,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 80,
+                "sent": 128,
+                "completed": 127,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 85,
+                "sent": 136,
+                "completed": 135,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 90,
+                "sent": 144,
+                "completed": 143,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 95,
+                "sent": 169,
+                "completed": 152,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 100,
+                "sent": 194,
+                "completed": 162,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 105,
+                "sent": 219,
+                "completed": 172,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 110,
+                "sent": 244,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 115,
+                "sent": 269,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 120,
+                "sent": 294,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 125,
+                "sent": 302,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 130,
+                "sent": 310,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 135,
+                "sent": 318,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 140,
+                "sent": 326,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 145,
+                "sent": 334,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 150,
+                "sent": 342,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 155,
+                "sent": 350,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 160,
+                "sent": 358,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 165,
+                "sent": 366,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 170,
+                "sent": 374,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 175,
+                "sent": 382,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 180,
+                "sent": 390,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 185,
+                "sent": 398,
+                "completed": 174,
+                "deadLettered": 13
+            },
+            {
+                "seconds": 190,
+                "sent": 406,
+                "completed": 174,
+                "deadLettered": 56
+            },
+            {
+                "seconds": 195,
+                "sent": 414,
+                "completed": 174,
+                "deadLettered": 113
+            },
+            {
+                "seconds": 200,
+                "sent": 422,
+                "completed": 174,
+                "deadLettered": 173
+            },
+            {
+                "seconds": 205,
+                "sent": 430,
+                "completed": 174,
+                "deadLettered": 250
+            },
+            {
+                "seconds": 210,
+                "sent": 438,
+                "completed": 174,
+                "deadLettered": 260
+            },
+            {
+                "seconds": 215,
+                "sent": 446,
+                "completed": 174,
+                "deadLettered": 269
+            },
+            {
+                "seconds": 220,
+                "sent": 454,
+                "completed": 174,
+                "deadLettered": 276
+            },
+            {
+                "seconds": 225,
+                "sent": 462,
+                "completed": 174,
+                "deadLettered": 285
+            },
+            {
+                "seconds": 230,
+                "sent": 470,
+                "completed": 174,
+                "deadLettered": 293
+            },
+            {
+                "seconds": 235,
+                "sent": 478,
+                "completed": 174,
+                "deadLettered": 302
+            },
+            {
+                "seconds": 240,
+                "sent": 486,
+                "completed": 174,
+                "deadLettered": 309
+            },
+            {
+                "seconds": 245,
+                "sent": 494,
+                "completed": 180,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 250,
+                "sent": 502,
+                "completed": 188,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 255,
+                "sent": 510,
+                "completed": 196,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 260,
+                "sent": 518,
+                "completed": 204,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 265,
+                "sent": 526,
+                "completed": 212,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 270,
+                "sent": 534,
+                "completed": 220,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 275,
+                "sent": 542,
+                "completed": 228,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 280,
+                "sent": 550,
+                "completed": 236,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 285,
+                "sent": 558,
+                "completed": 241,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 290,
+                "sent": 566,
+                "completed": 251,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 295,
+                "sent": 574,
+                "completed": 260,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 300,
+                "sent": 582,
+                "completed": 268,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 305,
+                "sent": 590,
+                "completed": 276,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 310,
+                "sent": 598,
+                "completed": 284,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 315,
+                "sent": 606,
+                "completed": 292,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 320,
+                "sent": 614,
+                "completed": 300,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 325,
+                "sent": 622,
+                "completed": 308,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 330,
+                "sent": 630,
+                "completed": 316,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 335,
+                "sent": 630,
+                "completed": 317,
+                "deadLettered": 313
+            },
+            {
+                "seconds": 338,
+                "sent": 630,
+                "completed": 317,
+                "deadLettered": 313
+            }
+        ],
+        "otherRun": {
+            "run": "D-brownout-cloud-20261031-171829",
+            "deadLettered": 233,
+            "recoverySeconds": 1
+        }
+    },
+    "fixed": {
+        "run": "D-brownout-cfg346-cloud-20261031-220612",
+        "recoverySeconds": 149,
+        "samples": [
+            {
+                "seconds": 0,
+                "sent": 0,
+                "completed": 0,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 5,
+                "sent": 8,
+                "completed": 8,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 10,
+                "sent": 16,
+                "completed": 16,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 15,
+                "sent": 24,
+                "completed": 24,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 20,
+                "sent": 32,
+                "completed": 32,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 25,
+                "sent": 40,
+                "completed": 40,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 30,
+                "sent": 48,
+                "completed": 48,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 35,
+                "sent": 56,
+                "completed": 55,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 40,
+                "sent": 64,
+                "completed": 63,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 45,
+                "sent": 72,
+                "completed": 71,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 50,
+                "sent": 80,
+                "completed": 79,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 55,
+                "sent": 88,
+                "completed": 87,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 60,
+                "sent": 96,
+                "completed": 95,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 65,
+                "sent": 104,
+                "completed": 103,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 70,
+                "sent": 112,
+                "completed": 111,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 75,
+                "sent": 120,
+                "completed": 119,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 80,
+                "sent": 128,
+                "completed": 127,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 85,
+                "sent": 136,
+                "completed": 135,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 90,
+                "sent": 144,
+                "completed": 143,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 95,
+                "sent": 169,
+                "completed": 152,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 100,
+                "sent": 194,
+                "completed": 162,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 105,
+                "sent": 219,
+                "completed": 172,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 110,
+                "sent": 244,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 115,
+                "sent": 269,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 120,
+                "sent": 294,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 125,
+                "sent": 302,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 130,
+                "sent": 310,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 135,
+                "sent": 318,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 140,
+                "sent": 326,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 145,
+                "sent": 334,
+                "completed": 174,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 150,
+                "sent": 342,
+                "completed": 175,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 155,
+                "sent": 350,
+                "completed": 185,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 160,
+                "sent": 358,
+                "completed": 195,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 165,
+                "sent": 366,
+                "completed": 205,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 170,
+                "sent": 374,
+                "completed": 205,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 175,
+                "sent": 382,
+                "completed": 205,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 180,
+                "sent": 390,
+                "completed": 205,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 185,
+                "sent": 398,
+                "completed": 205,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 190,
+                "sent": 406,
+                "completed": 205,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 195,
+                "sent": 414,
+                "completed": 205,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 200,
+                "sent": 422,
+                "completed": 205,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 205,
+                "sent": 430,
+                "completed": 206,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 210,
+                "sent": 438,
+                "completed": 214,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 215,
+                "sent": 446,
+                "completed": 224,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 220,
+                "sent": 454,
+                "completed": 234,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 225,
+                "sent": 462,
+                "completed": 238,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 230,
+                "sent": 470,
+                "completed": 238,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 235,
+                "sent": 478,
+                "completed": 238,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 240,
+                "sent": 486,
+                "completed": 238,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 245,
+                "sent": 494,
+                "completed": 238,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 250,
+                "sent": 502,
+                "completed": 238,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 255,
+                "sent": 510,
+                "completed": 238,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 260,
+                "sent": 518,
+                "completed": 238,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 265,
+                "sent": 526,
+                "completed": 243,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 270,
+                "sent": 534,
+                "completed": 253,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 275,
+                "sent": 542,
+                "completed": 263,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 280,
+                "sent": 550,
+                "completed": 271,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 285,
+                "sent": 558,
+                "completed": 271,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 290,
+                "sent": 566,
+                "completed": 271,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 295,
+                "sent": 574,
+                "completed": 271,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 300,
+                "sent": 582,
+                "completed": 271,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 305,
+                "sent": 590,
+                "completed": 271,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 310,
+                "sent": 598,
+                "completed": 271,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 315,
+                "sent": 606,
+                "completed": 271,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 320,
+                "sent": 614,
+                "completed": 271,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 325,
+                "sent": 622,
+                "completed": 276,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 330,
+                "sent": 630,
+                "completed": 286,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 335,
+                "sent": 630,
+                "completed": 377,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 340,
+                "sent": 630,
+                "completed": 408,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 345,
+                "sent": 630,
+                "completed": 422,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 350,
+                "sent": 630,
+                "completed": 422,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 355,
+                "sent": 630,
+                "completed": 426,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 360,
+                "sent": 630,
+                "completed": 427,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 365,
+                "sent": 630,
+                "completed": 427,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 370,
+                "sent": 630,
+                "completed": 427,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 375,
+                "sent": 630,
+                "completed": 478,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 380,
+                "sent": 630,
+                "completed": 481,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 385,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 390,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 395,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 400,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 405,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 410,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 415,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 420,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 425,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 430,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 435,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 440,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 445,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 450,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 455,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 460,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 465,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 470,
+                "sent": 630,
+                "completed": 484,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 475,
+                "sent": 630,
+                "completed": 522,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 480,
+                "sent": 630,
+                "completed": 630,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 485,
+                "sent": 630,
+                "completed": 630,
+                "deadLettered": 0
+            },
+            {
+                "seconds": 487,
+                "sent": 630,
+                "completed": 630,
+                "deadLettered": 0
+            }
+        ],
+        "otherRun": {
+            "run": "D-brownout-cfg346-cloud-20261031-172815",
+            "deadLettered": 0,
+            "recoverySeconds": 156
+        }
+    }
+}

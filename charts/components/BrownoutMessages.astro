@@ -1,0 +1,182 @@
+---
+// Chart 2: messages sent, completed and dead-lettered over time in fault D, defaults against the fix.
+import data from "./data/brownout-messages.json";
+
+const width = 720;
+const height = 300;
+const margin = { top: 56, right: 200, bottom: 40, left: 52 };
+const plotWidth = width - margin.left - margin.right;
+const plotHeight = height - margin.top - margin.bottom;
+
+const panels = [
+    { title: "Defaults", ...data.defaults },
+    { title: "Cancellation, tuned breaker and delayed redelivery", ...data.fixed },
+];
+
+const series = [
+    { key: "sent", name: "Sent", className: "sent" },
+    { key: "completed", name: "Completed", className: "completed" },
+    { key: "deadLettered", name: "Dead-lettered", className: "dead-lettered" },
+] as const;
+
+type SeriesKey = (typeof series)[number]["key"];
+type Sample = (typeof data.defaults.samples)[number];
+
+// Both panels share their axes, so the time the fix takes to drain is visible against the defaults.
+const maxSeconds = Math.max(...panels.map((panel) => panel.samples[panel.samples.length - 1].seconds));
+const maxMessages = 650;
+const yTicks = [0, 200, 400, 600];
+const xTicks = [0, 100, 200, 300, 400];
+
+const x = (seconds: number) => margin.left + (seconds / maxSeconds) * plotWidth;
+const y = (messages: number) => margin.top + plotHeight - (messages / maxMessages) * plotHeight;
+
+const linePath = (samples: Sample[], key: SeriesKey) =>
+    samples.map((sample, index) => `${index === 0 ? "M" : "L"}${x(sample.seconds)} ${y(sample[key])}`).join(" ");
+
+// Two lines can end on almost the same count, so the labels of those two are moved apart.
+const labelOffset = (last: Sample, key: SeriesKey) => {
+    if (Math.abs(last.sent - last.completed) < 40) {
+        return key === "sent" ? -13 : key === "completed" ? 13 : 0;
+    }
+    if (Math.abs(last.completed - last.deadLettered) < 40) {
+        return key === "completed" ? -13 : key === "deadLettered" ? 13 : 0;
+    }
+    return 0;
+};
+
+const stepWidth = (5 / maxSeconds) * plotWidth;
+
+const total = (key: SeriesKey, panel: (typeof panels)[number]) => panel.samples[panel.samples.length - 1][key];
+const summary = `Two line charts of fault D on a ${data.measuredOn}, with MaxConcurrentCalls 32. With defaults, completions stop at 174 and stay there after the load falls at ${data.spike.toSeconds} s, until ${total("deadLettered", panels[0])} of ${total("sent", panels[0])} messages are dead-lettered; the rest then complete. With the fix, completions keep rising slowly, none are dead-lettered, and all ${total("completed", panels[1])} complete, the last ones well after the fault's removal at ${data.faultRemovedAtSeconds} s.`;
+---
+
+<figure class="chart" aria-label={summary}>
+    {
+        panels.map((panel, panelIndex) => (
+            <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={panel.title}>
+                <text class="title" x={margin.left} y="22">{panel.title}</text>
+                <rect
+                    class="spike"
+                    x={x(data.spike.fromSeconds)}
+                    y={margin.top}
+                    width={x(data.spike.toSeconds) - x(data.spike.fromSeconds)}
+                    height={plotHeight}
+                />
+                <text class="tick" x={x((data.spike.fromSeconds + data.spike.toSeconds) / 2)} y={margin.top - 8} text-anchor="middle">Spike</text>
+                {
+                    yTicks.map((value) => (
+                        <g>
+                            <line class="grid" x1={margin.left} x2={margin.left + plotWidth} y1={y(value)} y2={y(value)} />
+                            <text class="tick" x={margin.left - 12} y={y(value)} text-anchor="end" dominant-baseline="middle">
+                                {value}
+                            </text>
+                        </g>
+                    ))
+                }
+                {
+                    xTicks.map((value) => (
+                        <text class="tick" x={x(value)} y={margin.top + plotHeight + 26} text-anchor="middle">
+                            {value === 400 && panelIndex === panels.length - 1 ? "400 s" : value}
+                        </text>
+                    ))
+                }
+                <line
+                    class="fault-removed"
+                    x1={x(data.faultRemovedAtSeconds)}
+                    x2={x(data.faultRemovedAtSeconds)}
+                    y1={margin.top}
+                    y2={margin.top + plotHeight}
+                />
+                <text class="tick" x={x(data.faultRemovedAtSeconds)} y={margin.top - 8} text-anchor="middle">Fault removed</text>
+                {series.map(({ key, className }) => <path class={`line ${className}`} d={linePath(panel.samples, key)} />)}
+                {
+                    series.map(({ key, name }) => {
+                        const last = panel.samples[panel.samples.length - 1];
+                        return (
+                            <text class="label" x={x(last.seconds) + 10} y={y(last[key]) + labelOffset(last, key)} dominant-baseline="middle">
+                                {`${name} ${last[key]}`}
+                            </text>
+                        );
+                    })
+                }
+                {
+                    panel.samples.map((sample) => (
+                        <rect class="hit" x={x(sample.seconds) - stepWidth / 2} y={margin.top} width={stepWidth} height={plotHeight}>
+                            <title>{`${sample.seconds} s: ${sample.sent} sent, ${sample.completed} completed, ${sample.deadLettered} dead-lettered`}</title>
+                        </rect>
+                    ))
+                }
+            </svg>
+        ))
+    }
+    <figcaption>
+        Messages over time in fault D, with <code>MaxConcurrentCalls</code> 32, one run of each. Measured on a {data.measuredOn}.
+        Recovery reads {data.defaults.recoverySeconds} s with defaults and {data.fixed.recoverySeconds} s with the fix. In the
+        other run of each, {data.defaults.otherRun.deadLettered} and {data.fixed.otherRun.deadLettered} messages were
+        dead-lettered, and recovery read {data.defaults.otherRun.recoverySeconds} s and {data.fixed.otherRun.recoverySeconds} s.
+    </figcaption>
+</figure>
+
+<style>
+    .chart {
+        margin: 2em 0;
+    }
+    svg {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+    .grid {
+        stroke: var(--line);
+    }
+    .spike {
+        fill: var(--line);
+        opacity: 0.5;
+    }
+    .fault-removed {
+        stroke: var(--muted);
+        stroke-dasharray: 2 3;
+    }
+    .tick {
+        fill: var(--muted);
+        font-family: var(--font-display);
+        font-size: 15px;
+    }
+    .title,
+    .label {
+        fill: var(--fg);
+        font-family: var(--font-display);
+        font-size: 15px;
+    }
+    .line {
+        fill: none;
+        stroke-width: 2;
+    }
+    .line.sent {
+        stroke: var(--muted);
+    }
+    .line.completed {
+        stroke: var(--accent);
+    }
+    .line.dead-lettered {
+        stroke: var(--fg);
+        stroke-dasharray: 6 4;
+    }
+    .hit {
+        fill: transparent;
+    }
+    /* The SVG scales down on a phone, so its text starts larger there. */
+    @media (max-width: 520px) {
+        .tick,
+        .title,
+        .label {
+            font-size: 24px;
+        }
+    }
+    figcaption {
+        margin-top: 0.5em;
+        color: var(--muted);
+        font-size: 0.875rem;
+    }
+</style>
