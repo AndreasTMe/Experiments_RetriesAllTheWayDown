@@ -13,47 +13,64 @@ var images = new Dictionary<string, string>
     ["Toxiproxy"]             = "ghcr.io/shopify/toxiproxy:2.13.0",
 };
 
-// --- Service Bus emulator with queue "orders" ---------------------------------------------
+// --- Service Bus with queue "orders": a real namespace or the emulator ---------------------
 
-var serviceBus = builder.AddAzureServiceBus("external-servicebus")
-    .RunAsEmulator(emulator => emulator
-        .WithImageTag("2.0.0")
-        .WithHostPort(5672)
-        .WithEndpoint("emulatorhealth", e => e.Port = 5300));
+// The environment variable ConnectionStrings__servicebus selects a real namespace. Without it the emulator runs.
+var useRealNamespace = !string.IsNullOrEmpty(builder.Configuration["ConnectionStrings:servicebus"]);
 
-// Experiment:MaxDeliveryCount, 10 by default. 1 turns Service Bus redelivery effectively off: the first abandon
-// dead-letters the message. Service Bus has no 0.
-var maxDeliveryCount = int.Parse(
-    builder.Configuration["Experiment:MaxDeliveryCount"] ?? "10",
-    CultureInfo.InvariantCulture);
-if (maxDeliveryCount < 1)
+IResourceBuilder<IResourceWithConnectionString> serviceBus;
+IResourceBuilder<IResourceWithConnectionString> serviceBusAdmin;
+
+if (useRealNamespace)
 {
-    throw new InvalidOperationException($"Experiment:MaxDeliveryCount must be at least 1, not {maxDeliveryCount}");
+    // The queue's properties, Experiment:MaxDeliveryCount included, come from infra/servicebus.bicep.
+    serviceBus = serviceBusAdmin = builder.AddConnectionString("servicebus");
+    images.Remove("ServiceBusEmulator");
+    images.Remove("ServiceBusEmulatorSql");
 }
+else
+{
+    var emulatedServiceBus = builder.AddAzureServiceBus("external-servicebus")
+        .RunAsEmulator(emulator => emulator
+            .WithImageTag("2.0.0")
+            .WithHostPort(5672)
+            .WithEndpoint("emulatorhealth", e => e.Port = 5300));
 
-serviceBus.AddServiceBusQueue("orders")
-    .WithProperties(queue =>
+    // Experiment:MaxDeliveryCount, 10 by default. 1 turns Service Bus redelivery effectively off: the first abandon
+    // dead-letters the message. Service Bus has no 0.
+    var maxDeliveryCount = int.Parse(
+        builder.Configuration["Experiment:MaxDeliveryCount"] ?? "10",
+        CultureInfo.InvariantCulture);
+    if (maxDeliveryCount < 1)
     {
-        queue.MaxDeliveryCount                 = maxDeliveryCount;
-        queue.LockDuration                     = TimeSpan.FromMinutes(1);
-        queue.DeadLetteringOnMessageExpiration = false;
-        queue.RequiresSession                  = false;
-        queue.RequiresDuplicateDetection       = false;
-    });
+        throw new InvalidOperationException($"Experiment:MaxDeliveryCount must be at least 1, not {maxDeliveryCount}");
+    }
 
-// RunAsEmulator adds a SQL Server container tagged "2022-latest". Pin it.
-var emulatorSql = builder.Resources.OfType<ContainerResource>()
-    .Single(r => r.Name == $"{serviceBus.Resource.Name}-mssql");
-builder.CreateResourceBuilder(emulatorSql)
-    .WithImageTag("2022-CU27-ubuntu-22.04")
-    .WithParentRelationship(serviceBus);
+    emulatedServiceBus.AddServiceBusQueue("orders")
+        .WithProperties(queue =>
+        {
+            queue.MaxDeliveryCount                 = maxDeliveryCount;
+            queue.LockDuration                     = TimeSpan.FromMinutes(1);
+            queue.DeadLetteringOnMessageExpiration = false;
+            queue.RequiresSession                  = false;
+            queue.RequiresDuplicateDetection       = false;
+        });
 
-// The emulator answers management (ServiceBusAdministrationClient) requests on the same port as its health endpoint.
-var serviceBusAdmin = builder.AddConnectionString(
-        "servicebus-admin",
-        ReferenceExpression.Create(
-            $"Endpoint=sb://{serviceBus.GetEndpoint("emulatorhealth").Property(EndpointProperty.HostAndPort)};SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"))
-    .WithParentRelationship(serviceBus);
+    // RunAsEmulator adds a SQL Server container tagged "2022-latest". Pin it.
+    var emulatorSql = builder.Resources.OfType<ContainerResource>()
+        .Single(r => r.Name == $"{emulatedServiceBus.Resource.Name}-mssql");
+    builder.CreateResourceBuilder(emulatorSql)
+        .WithImageTag("2022-CU27-ubuntu-22.04")
+        .WithParentRelationship(emulatedServiceBus);
+
+    // The emulator answers management (ServiceBusAdministrationClient) requests on the same port as its health endpoint.
+    serviceBusAdmin = builder.AddConnectionString(
+            "servicebus-admin",
+            ReferenceExpression.Create(
+                $"Endpoint=sb://{emulatedServiceBus.GetEndpoint("emulatorhealth").Property(EndpointProperty.HostAndPort)};SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"))
+        .WithParentRelationship(emulatedServiceBus);
+    serviceBus = emulatedServiceBus;
+}
 
 // --- Postgres, reached through toxiproxy --------------------------------------------------
 
@@ -108,7 +125,7 @@ var ordersApi = builder.AddProject<Projects.OrdersApi>("api-orders")
 // The Worker calls http://ordersapi, so the reference keeps that service name.
 var worker = builder.AddProject<Projects.Worker>("worker-orders")
     .WithReference(serviceBus, "servicebus")
-    .WithReference(serviceBusAdmin)
+    .WithReference(serviceBusAdmin, "servicebus-admin")
     .WithReference(ordersApi, "ordersapi")
     .WaitFor(serviceBus)
     .WaitFor(ordersApi);
@@ -156,7 +173,7 @@ IEnumerable<(string Name, string[] Args)> runnerCommands = Directory
 
 foreach (var (name, runnerArgs) in runnerCommands)
 {
-    builder.AddExecutable(
+    var runnerCommand = builder.AddExecutable(
             name,
             "dotnet",
             repoRoot,
@@ -166,6 +183,11 @@ foreach (var (name, runnerArgs) in runnerCommands)
         .WaitFor(producer)
         .WaitFor(worker)
         .WaitFor(ordersApi);
+
+    if (useRealNamespace)
+    {
+        runnerCommand.WithReference(serviceBus, "servicebus");
+    }
 }
 
 // --- Experiment switches and image versions, passed down as environment variables ----------

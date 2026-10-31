@@ -22,8 +22,9 @@ internal sealed class ScenarioCommand
 
     public async Task<int> RunAsync(Scenario scenario, CancellationToken cancellationToken)
     {
-        var startedAt  = DateTimeOffset.UtcNow;
-        var suffix     = _configuration is null ? "" : $"-cfg{_configuration}";
+        var startedAt = DateTimeOffset.UtcNow;
+        var suffix = (_configuration is null ? "" : $"-cfg{_configuration}")
+                     + (_clients.Settings.UsesEmulator ? "" : "-cloud");
         var resultsDir = Path.Combine(_resultsRoot, $"{scenario.Name}{suffix}-{startedAt:yyyyMMdd-HHmmss}");
         Directory.CreateDirectory(resultsDir);
         Log($"Scenario {scenario.Name}: results in {resultsDir}");

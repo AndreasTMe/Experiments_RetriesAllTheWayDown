@@ -105,6 +105,12 @@ dotnet run --project scripts/Runner -- emulator-check
 ./scripts/faults.ps1 postgres-down
 ```
 
+Against a real namespace instead of the emulator: deploy `infra/main.bicep`, then set `ConnectionStrings__servicebus`
+to the namespace's connection string, in the environment of both the AppHost and the Runner. With it set the emulator
+doesn't start, and a run's folder gets `-cloud` after any `-cfg<label>`. The queue's properties then come from the
+template, so `Experiment:MaxDeliveryCount` has no effect on the queue, and `emulator-check` reads them from the
+namespace.
+
 | Scenario               | Fault                                                                  |
 |------------------------|------------------------------------------------------------------------|
 | `smoke`                | none; 10 messages, expect exactly 1 attempt per message at every layer |
