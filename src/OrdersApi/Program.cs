@@ -15,7 +15,8 @@ metrics.Declare(
     "db_command_executed",
     "db_command_failed",
     "db_command_canceled",
-    "ef_retries");
+    "ef_retries",
+    "retry_budget_denied");
 builder.Services.AddSingleton(metrics);
 builder.Services.AddSingleton(experiment);
 builder.Services.AddSingleton<FaultState>();
@@ -23,6 +24,8 @@ builder.Services.AddSingleton<NpgsqlConnectionCreatedListener>();
 
 // The Aspire integration calls EnableRetryOnFailure() unless DisableRetry is set. When DbRetries is on we
 // replace that strategy with a subclass of the same NpgsqlRetryingExecutionStrategy (same defaults) that counts retries.
+// With RetryBudget on, its retries also draw on one bucket shared by every request.
+var retryBudget = experiment.RetryBudget ? new RetryTokenBucket() : null;
 builder.AddNpgsqlDbContext<OrdersDbContext>(
     "ordersdb",
     settings => settings.DisableRetry = !experiment.DbRetries,
@@ -31,7 +34,7 @@ builder.AddNpgsqlDbContext<OrdersDbContext>(
         if (experiment.DbRetries)
         {
             options.UseNpgsql(npgsql =>
-                npgsql.ExecutionStrategy(deps => new RetryCountingExecutionStrategy(deps, metrics)));
+                npgsql.ExecutionStrategy(deps => new RetryCountingExecutionStrategy(deps, metrics, retryBudget)));
         }
 
         options.AddInterceptors(new CountingConnectionInterceptor(metrics), new CountingCommandInterceptor(metrics));

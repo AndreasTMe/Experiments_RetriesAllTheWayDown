@@ -1,0 +1,228 @@
+{
+  "scenario": {
+    "name": "C-api-errors-20pct",
+    "description": "OrdersApi returns 500 for 20% of /orders requests for 2 minutes at 10 messages/s.",
+    "rate": 10,
+    "messageCount": null,
+    "warmupSeconds": 30,
+    "fault": {
+      "kind": "api",
+      "latencyMs": 0,
+      "timeoutMs": 0,
+      "errorRate": 0.2,
+      "capacity": 0,
+      "serviceTimeMs": 0
+    },
+    "faultStartSeconds": 0,
+    "faultDurationSeconds": 120,
+    "sendAfterFaultSeconds": 30,
+    "drainTimeoutSeconds": 900,
+    "rateChanges": [],
+    "workerSwitches": null,
+    "faultAppliedAt": 30,
+    "faultRemovedAt": 150,
+    "producerStopsAt": 180
+  },
+  "startedAt": "2026-10-29T18:41:02.4945205+00:00",
+  "finishedAt": "2026-10-29T18:44:30.1358918+00:00",
+  "drained": true,
+  "attemptsPerMessage": {
+    "messagesSent": 1800,
+    "serviceBusDeliveries": {
+      "total": 2512,
+      "perMessage": 1.396
+    },
+    "httpAttemptsFromWorker": {
+      "total": 1781,
+      "perMessage": 0.989
+    },
+    "httpRequestsAtApi": {
+      "total": 1781,
+      "perMessage": 0.989
+    },
+    "dbConnectionOpens": {
+      "total": 1722,
+      "perMessage": 0.957
+    },
+    "npgsqlConnectionsCreated": {
+      "total": 0,
+      "perMessage": 0
+    },
+    "toxiproxyConnections": {
+      "total": 0,
+      "perMessage": 0
+    },
+    "dbCommands": {
+      "total": 1722,
+      "perMessage": 0.957
+    },
+    "efRetries": {
+      "total": 0,
+      "perMessage": 0
+    },
+    "pgInsertCalls": {
+      "total": 1722,
+      "perMessage": 0.957
+    },
+    "rows": {
+      "total": 1722,
+      "perMessage": 0.957
+    }
+  },
+  "hitMessages": {
+    "definition": "Messages whose count at any layer differs from the clean path: 1 delivery, 1 HTTP attempt, 1 request, 1 connection open, 1 command, 0 EF retries, 1 row",
+    "messagesCounted": 1800,
+    "cleanMessages": 1675,
+    "hitMessages": 125,
+    "perLayer": {
+      "serviceBusDeliveries": {
+        "total": 837,
+        "perMessage": 6.696,
+        "max": 10
+      },
+      "httpAttemptsFromWorker": {
+        "total": 106,
+        "perMessage": 0.848,
+        "max": 5
+      },
+      "httpRequestsAtApi": {
+        "total": 106,
+        "perMessage": 0.848,
+        "max": 5
+      },
+      "dbConnectionOpens": {
+        "total": 47,
+        "perMessage": 0.376,
+        "max": 1
+      },
+      "dbCommands": {
+        "total": 47,
+        "perMessage": 0.376,
+        "max": 1
+      },
+      "efRetries": {
+        "total": 0,
+        "perMessage": 0,
+        "max": 0
+      },
+      "rows": {
+        "total": 47,
+        "perMessage": 0.376,
+        "max": 1
+      },
+      "abandoned": {
+        "total": 790,
+        "perMessage": 6.32,
+        "max": 10
+      },
+      "rescheduled": {
+        "total": 0,
+        "perMessage": 0,
+        "max": 0
+      },
+      "callerGoneWhileRunning": {
+        "total": 0,
+        "perMessage": 0,
+        "max": 0
+      }
+    }
+  },
+  "recovery": {
+    "definition": "Seconds from the removal of the fault until the backlog (producer.sent - worker.completed - runner.dlq_peeked) is back to its warmup maximum and stays there until the end of the run",
+    "faultRemovedAtSeconds": 150.0290696,
+    "baselineBacklog": 0,
+    "peakBacklog": 854,
+    "backlogAtRemoval": 829,
+    "recoveredAtSeconds": 194,
+    "recoverySeconds": 44
+  },
+  "duplicates": {
+    "rows": 1722,
+    "distinctMessages": 1722,
+    "messagesWithDuplicates": 0,
+    "duplicateRows": 0,
+    "maxRowsPerMessage": 1
+  },
+  "deadLettered": {
+    "fromQueueRuntimeProperties": null,
+    "fromPeekingDlq": 78
+  },
+  "totals": {
+    "producer": {
+      "service": "producer",
+      "timestamp": "2026-10-29T18:44:30.1233995\u002B00:00",
+      "counters": {
+        "send_failed": 0,
+        "sent": 1800
+      },
+      "gauges": {}
+    },
+    "worker": {
+      "service": "worker",
+      "timestamp": "2026-10-29T18:44:30.1238218\u002B00:00",
+      "counters": {
+        "abandon_failed": 0,
+        "abandoned": 790,
+        "admin_errors": 0,
+        "complete_failed": 0,
+        "dead_lettered_by_worker": 0,
+        "handler_succeeded": 1722,
+        "http_attempts": 1781,
+        "lock_lost": 0,
+        "other_errors": 0,
+        "received": 2512,
+        "received_delivery_1": 1800,
+        "received_delivery_10": 78,
+        "received_delivery_2": 86,
+        "received_delivery_3": 80,
+        "received_delivery_4": 78,
+        "received_delivery_5": 78,
+        "received_delivery_6": 78,
+        "received_delivery_7": 78,
+        "received_delivery_8": 78,
+        "received_delivery_9": 78,
+        "rescheduled": 0,
+        "retry_budget_denied": 11
+      },
+      "gauges": {
+        "completed": 1722,
+        "in_flight": 0,
+        "queue_active": -1,
+        "queue_dead_lettered": -1
+      }
+    },
+    "ordersapi": {
+      "service": "ordersapi",
+      "timestamp": "2026-10-29T18:44:30.12412\u002B00:00",
+      "counters": {
+        "db_command_canceled": 0,
+        "db_command_executed": 1722,
+        "db_command_failed": 0,
+        "db_connection_failed": 0,
+        "db_connection_opened": 1722,
+        "ef_retries": 0,
+        "fault_errors_injected": 59,
+        "npgsql_connection_created": 0,
+        "orders_caller_gone_while_running": 0,
+        "orders_requests": 1781,
+        "orders_responses": 1781,
+        "orders_responses_200": 1722,
+        "orders_responses_500": 59,
+        "retry_budget_denied": 0
+      },
+      "gauges": {
+        "fault_queued": 0
+      }
+    }
+  },
+  "groundTruth": {
+    "timestamp": "2026-10-29T18:44:30.1268382\u002B00:00",
+    "rows": 1722,
+    "distinctMessages": 1722,
+    "messagesWithDuplicates": 0,
+    "duplicateRows": 0,
+    "maxRowsPerMessage": 1,
+    "insertCalls": 1722,
+    "insertRows": 1722
+  }
+}

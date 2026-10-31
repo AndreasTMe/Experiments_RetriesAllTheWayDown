@@ -17,6 +17,7 @@ global using OrdersApi.Instrumentation;
 global using ServiceDefaults;
 global using ServiceDefaults.Configuration;
 global using ServiceDefaults.Counting;
+global using ServiceDefaults.Resilience;
 global using System;
 global using System.Collections.Generic;
 global using System.Data.Common;

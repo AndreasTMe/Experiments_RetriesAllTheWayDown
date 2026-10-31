@@ -90,6 +90,13 @@ A development or check run, under `results/dev/`, which git ignores:
 dotnet run --project scripts/Runner -- A-postgres-down-2min --dev
 ```
 
+A run of a fix: start the AppHost with that configuration's switches, then label the run with `--config`, so its folder
+can't be mistaken for the baseline (`results/A-postgres-down-2min-cfg2a-{timestamp}/`):
+
+```bash
+dotnet run --project scripts/Runner -- A-postgres-down-2min --config 2a
+```
+
 ```bash
 dotnet run --project scripts/Runner -- emulator-check
 ```
@@ -119,8 +126,9 @@ minutes.
 
 Each run writes to `results/{scenario}-{timestamp}/`, which git keeps. With `--dev` it writes to
 `results/dev/{scenario}-{timestamp}/` instead, which git ignores: use it for every run the post doesn't report. The
-`scenario-*` runs started from the dashboard pass `--dev`, so baseline runs are started from a terminal. Each run folder
-has:
+`scenario-*` runs started from the dashboard pass `--dev`, so baseline runs are started from a terminal.
+`--config <label>` adds `-cfg<label>` after the scenario name and writes the label to `config.json` (`defaults`
+without it). Each run folder has:
 
 - `timeseries.csv`: one row per second with every counter from every service and the database, plus
   `toxiproxy.accepted_clients`, the TCP connections toxiproxy accepted so far, and `runner.dlq_peeked`, the messages in
@@ -164,6 +172,9 @@ AppHost. The Worker switches can also be changed at runtime with `PUT /admin/exp
 | `AlwaysThrow`        | false   | true: the Worker handler throws before calling the API                  |
 | `HoldMessageMs`      | 0       | The Worker handler waits this long before calling the API               |
 | `DisableLockRenewal` | false   | true: `MaxAutoLockRenewalDuration = 0`                                  |
+| `TunedBreaker`       | false   | true: Worker breaker at 50% failures, minimum 2 in 30 s, break 30 s     |
+| `RetryBudget`        | false   | true: HTTP and EF retries at most 10% of first attempts, burst 10       |
+| `DelayedRedelivery`  | false   | true: a failed message is scheduled again, 5 s doubling to 5 min        |
 | `MaxDeliveryCount`   | 10      | The queue's `MaxDeliveryCount`; 1 turns Service Bus redelivery off      |
 | `MaxConcurrentCalls` | 1       | The Worker processor's `MaxConcurrentCalls`, the SDK default            |
 
