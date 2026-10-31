@@ -5,6 +5,7 @@
     <Folder Name="/charts/components/">
         <File Path="charts/components/AttemptsPerLayer.astro" />
         <File Path="charts/components/BrownoutMessages.astro" />
+        <File Path="charts/components/ChainDiagram.astro" />
         <File Path="charts/components/DeadLettersVsOutage.astro" />
     </Folder>
     <Folder Name="/charts/components/data/">
