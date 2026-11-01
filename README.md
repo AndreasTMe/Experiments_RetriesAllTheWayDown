@@ -6,8 +6,9 @@ queue, a worker takes each message and POSTs it to an API, and the API inserts a
 layer runs with the defaults its library ships with: the Service Bus redelivery, the HttpClient standard resilience
 handler, and the EF Core retrying execution strategy that Aspire turns on.
 
-This is the baseline: it has no fixes. Faults are injected between the API and Postgres with toxiproxy, or inside the
-API with a fault middleware. Every layer counts what it does (deliveries, HTTP attempts, requests, connection opens,
+Out of the box it runs on those defaults, and the fixes tried against them are switches, off by default (see
+[Configurations](#configurations)). Faults are injected between the API and Postgres with toxiproxy, or inside the API
+with a fault middleware. Every layer counts what it does (deliveries, HTTP attempts, requests, connection opens,
 commands, EF retries), and the database is counted directly, bypassing the proxy, so the numbers can be compared with
 what actually landed. The values of every default in play are in [docs/defaults.md](docs/defaults.md).
 
@@ -38,6 +39,10 @@ Nothing else: the Aspire AppHost SDK brings the Aspire CLI bundle and the dashbo
 | `scripts/faults.ps1`  | Apply or remove a fault by hand                                                                              |
 | `scenarios/`          | Scenario definitions                                                                                         |
 | `docs/defaults.md`    | Every relevant default, with package, version and how it was checked                                         |
+| `infra/`              | Bicep for the Standard namespace and the `orders` queue, for runs against a real namespace                   |
+| `results/`            | The runs the post reports, one folder each                                                                   |
+| `charts/`             | The script that exports chart data from `results/`, and the Astro chart components                           |
+| `images/`             | The trace waterfall screenshot                                                                               |
 
 ## How to run
 
@@ -189,13 +194,85 @@ every run the Runner puts the Worker on those switches, or back on its startup o
 another's. Only `D-brownout` uses it: it raises `MaxConcurrentCalls`, because with 1 request in flight the API never
 queues. **So fault D does not run on defaults**, unlike every other scenario.
 
-## TODO
+## Configurations
 
-Not implemented on purpose; this is the baseline to compare them against.
+Each configuration is a set of switches on the AppHost, and the run's `--config` label puts it in the folder name. Set
+the switches in the AppHost's environment before starting it, because `TunedBreaker`, `RetryBudget` and
+`DelayedRedelivery` are read at startup. `appsettings.json` keeps the defaults.
 
-- Circuit breaker tuning (the standard handler's breaker needs 100 requests in 30 s before it can open)
-- Retry budgets, or retrying at one layer only
-- Delayed redelivery (scheduled messages or backoff instead of an immediate abandon)
+| Label | Switches                                                     | What it tries                         |
+|-------|--------------------------------------------------------------|---------------------------------------|
+| none  | none                                                         | The defaults                          |
+| `2a`  | `HttpRetries` false, `DbRetries` false                       | Retry at Service Bus only             |
+| `2b`  | `MaxDeliveryCount` 1                                         | Retry at HTTP and EF only             |
+| `3`   | `PassCancellation` true                                      | Cancellation all the way down         |
+| `4`   | `TunedBreaker` true                                          | A breaker that trips at this traffic  |
+| `5`   | `RetryBudget` true                                           | A retry budget                        |
+| `6`   | `DelayedRedelivery` true                                     | Delayed redelivery                    |
+| `46`  | `TunedBreaker` true, `DelayedRedelivery` true                | The breaker, without its dead letters |
+| `346` | `PassCancellation`, `TunedBreaker`, `DelayedRedelivery` true | The fix charted against the defaults  |
+
+For example, configuration 6 against the 5 minute outage, with the AppHost in one terminal and the Runner in another:
+
+```powershell
+$env:Experiment__DelayedRedelivery = "true"; dotnet run --project src/AppHost
+```
+
+```bash
+dotnet run --project scripts/Runner -- A-postgres-down-5min --config 6
+```
+
+## The runs in `results/`
+
+| Runs                                              | Where          | Configurations                                |
+|---------------------------------------------------|----------------|-----------------------------------------------|
+| `A-postgres-down-2min`, `B-postgres-slow-15s`     | Emulator       | Defaults, 2a, 2b, 4, 5, 6, 46, 346 (B also 3) |
+| `C-api-errors-20pct`                              | Emulator       | Defaults, 2a, 2b, 4, 5, 6, 46                 |
+| `A-postgres-down-{30s,5min,10min,20min}`          | Emulator       | Defaults, 6                                   |
+| `A-postgres-down-2min-cloud-*`                    | Real namespace | Defaults, two runs                            |
+| `D-brownout-cloud-*`, `D-brownout-cfg346-cloud-*` | Real namespace | Defaults and 346, two runs each               |
+
+Most comparisons are one run of each, so a small difference isn't evidence of much. Fault A on both shows the emulator
+is sound for counts but not for time: the attempts match to within a retry or two, while recovery is about 4.6 times
+longer on the real namespace. The emulator reports no queue counts either, so dead letters come from peeking the
+dead-letter queue. Reproducing the `-cloud` runs needs your own namespace, which costs money while it exists.
+
+Not explained, and left as they are:
+
+- `B-postgres-slow-15s-20261026-231055`: toxiproxy accepted 24 connections, against 4 created plus 19 failed. A re-run
+  gave 24 = 5 + 19, so it didn't reproduce
+- Configuration 2 against fault C sent fewer than 1,800 messages (1,796 and 1,768). Rows plus dead letters equal the sent
+  count, so every sent message is accounted for
+- `C-api-errors-20pct-cfg2b` has no recovery time: its backlog never stayed back at the warmup value of 0, so
+  `recoverySeconds` is null. The run drained
+
+## Charts
+
+The charts are Astro components for the post's site, and Astro isn't a dependency of this repo, so copy
+`charts/components/` (with its `data/` folder) into an Astro project to render them. They read their colours and font
+from the site's `--bg`, `--fg`, `--muted`, `--accent`, `--line` and `--font-display` CSS variables.
+
+Regenerate the data from the result folders with Node, which needs no packages:
+
+```bash
+node charts/export-data.mjs
+```
+
+The script names the runs it reads at its top, so to chart your own runs, change those names.
+
+| Component             | Data                          | Runs                                           |
+|-----------------------|-------------------------------|------------------------------------------------|
+| `ChainDiagram`        | hard-coded                    | None; the values are from `docs/defaults.md`   |
+| `AttemptsPerLayer`    | `attempts-per-layer.json`     | Faults A and B, defaults against 346, emulator |
+| `DeadLettersVsOutage` | `dead-letters-vs-outage.json` | Fault A sweep, defaults against 6, emulator    |
+| `BrownoutMessages`    | `brownout-messages.json`      | Fault D, defaults against 346, real namespace  |
+
+`images/04-trace-waterfall.jpg` is a screenshot of the Aspire dashboard during a real namespace run of fault A, so it
+comes from running that scenario, not from a script.
+
+## Not tried
+
 - Idempotency: a unique constraint on `message_id` or an idempotency key
 - Timeouts that fit inside each other (HTTP attempt timeout vs EF retries vs lock duration)
-- Passing cancellation through by default
+- A sweep of `MaxConcurrentCalls` for fault D
+- The same experiment on RabbitMQ
