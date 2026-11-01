@@ -1,0 +1,163 @@
+{
+  "scenario": {
+    "name": "D-brownout",
+    "description": "NOT DEFAULTS: Worker MaxConcurrentCalls 32 (SDK default 1). OrdersApi limited to 2 concurrent requests of 1 s each (2/s) at 1.6 messages/s, with a 30 s spike to 5 messages/s.",
+    "rate": 1.6,
+    "messageCount": null,
+    "warmupSeconds": 30,
+    "fault": {
+      "kind": "api",
+      "latencyMs": 0,
+      "timeoutMs": 0,
+      "errorRate": 0,
+      "capacity": 2,
+      "serviceTimeMs": 1000
+    },
+    "faultStartSeconds": 0,
+    "faultDurationSeconds": 300,
+    "sendAfterFaultSeconds": 0,
+    "drainTimeoutSeconds": 900,
+    "rateChanges": [
+      {
+        "atSeconds": 90,
+        "rate": 5
+      },
+      {
+        "atSeconds": 120,
+        "rate": 1.6
+      }
+    ],
+    "workerSwitches": {
+      "MaxConcurrentCalls": 32
+    },
+    "faultAppliedAt": 30,
+    "faultRemovedAt": 330,
+    "producerStopsAt": 330
+  },
+  "configuration": "346",
+  "runner": {
+    "producer": "http://localhost:5101",
+    "worker": "http://localhost:5102",
+    "ordersApi": "http://localhost:5103",
+    "toxiproxy": "http://localhost:8474",
+    "toxiproxyContainer": "external-toxiproxy",
+    "serviceBus": "Endpoint=sb://retries-byt2znhhf3gfw.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=***",
+    "serviceBusAdmin": "Endpoint=sb://retries-byt2znhhf3gfw.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=***",
+    "queue": "orders",
+    "proxy": "postgres",
+    "usesEmulator": false
+  },
+  "producer": {
+    "service": "producer",
+    "experiment": {
+      "httpRetries": true,
+      "dbRetries": true,
+      "passCancellation": true,
+      "alwaysThrow": false,
+      "holdMessageMs": 0,
+      "disableLockRenewal": false,
+      "tunedBreaker": true,
+      "retryBudget": false,
+      "delayedRedelivery": true,
+      "maxConcurrentCalls": 1,
+      "maxDeliveryCount": 10
+    },
+    "images": {
+      "PgWeb": "docker.io/sosedoff/pgweb:0.16.2",
+      "Postgres": "docker.io/library/postgres:18.3",
+      "Toxiproxy": "ghcr.io/shopify/toxiproxy:2.13.0"
+    },
+    "serviceBusRetry": {
+      "mode": 1,
+      "maxRetries": 3,
+      "delay": "00:00:00.8000000",
+      "maxDelay": "00:01:00",
+      "tryTimeout": "00:01:00",
+      "customRetryPolicy": null
+    }
+  },
+  "worker": {
+    "service": "worker",
+    "experiment": {
+      "httpRetries": true,
+      "dbRetries": true,
+      "passCancellation": true,
+      "alwaysThrow": false,
+      "holdMessageMs": 0,
+      "disableLockRenewal": false,
+      "tunedBreaker": true,
+      "retryBudget": false,
+      "delayedRedelivery": true,
+      "maxConcurrentCalls": 32,
+      "maxDeliveryCount": 10
+    },
+    "images": {
+      "PgWeb": "docker.io/sosedoff/pgweb:0.16.2",
+      "Postgres": "docker.io/library/postgres:18.3",
+      "Toxiproxy": "ghcr.io/shopify/toxiproxy:2.13.0"
+    },
+    "processor": {
+      "prefetchCount": 0,
+      "receiveMode": 0,
+      "autoCompleteMessages": true,
+      "maxAutoLockRenewalDuration": "00:05:00",
+      "maxConcurrentCalls": 32,
+      "subQueue": 0,
+      "identifier": null
+    },
+    "serviceBusRetry": {
+      "mode": 1,
+      "maxRetries": 3,
+      "delay": "00:00:00.8000000",
+      "maxDelay": "00:01:00",
+      "tryTimeout": "00:01:00",
+      "customRetryPolicy": null
+    }
+  },
+  "ordersapi": {
+    "service": "ordersapi",
+    "experiment": {
+      "httpRetries": true,
+      "dbRetries": true,
+      "passCancellation": true,
+      "alwaysThrow": false,
+      "holdMessageMs": 0,
+      "disableLockRenewal": false,
+      "tunedBreaker": true,
+      "retryBudget": false,
+      "delayedRedelivery": true,
+      "maxConcurrentCalls": 1,
+      "maxDeliveryCount": 10
+    },
+    "images": {
+      "PgWeb": "docker.io/sosedoff/pgweb:0.16.2",
+      "Postgres": "docker.io/library/postgres:18.3",
+      "Toxiproxy": "ghcr.io/shopify/toxiproxy:2.13.0"
+    },
+    "faults": {
+      "errorRate": 0,
+      "capacity": 0,
+      "serviceTimeMs": 0
+    },
+    "database": {
+      "host": "localhost",
+      "port": 15432,
+      "timeoutSeconds": 15,
+      "commandTimeoutSeconds": 30,
+      "maxPoolSize": 100,
+      "executionStrategy": "OrdersApi.Instrumentation.RetryCountingExecutionStrategy",
+      "retriesOnFailure": true
+    }
+  },
+  "toxiproxy": {
+    "version": "{\u0022version\u0022: \u00222.13.0\u0022}",
+    "proxy": {
+      "name": "postgres",
+      "listen": "[::]:15432",
+      "upstream": "external-postgres:5432",
+      "enabled": true,
+      "Logger": {},
+      "toxics": []
+    }
+  }
+}

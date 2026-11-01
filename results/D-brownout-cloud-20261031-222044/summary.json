@@ -1,0 +1,238 @@
+{
+  "scenario": {
+    "name": "D-brownout",
+    "description": "NOT DEFAULTS: Worker MaxConcurrentCalls 32 (SDK default 1). OrdersApi limited to 2 concurrent requests of 1 s each (2/s) at 1.6 messages/s, with a 30 s spike to 5 messages/s.",
+    "rate": 1.6,
+    "messageCount": null,
+    "warmupSeconds": 30,
+    "fault": {
+      "kind": "api",
+      "latencyMs": 0,
+      "timeoutMs": 0,
+      "errorRate": 0,
+      "capacity": 2,
+      "serviceTimeMs": 1000
+    },
+    "faultStartSeconds": 0,
+    "faultDurationSeconds": 300,
+    "sendAfterFaultSeconds": 0,
+    "drainTimeoutSeconds": 900,
+    "rateChanges": [
+      {
+        "atSeconds": 90,
+        "rate": 5
+      },
+      {
+        "atSeconds": 120,
+        "rate": 1.6
+      }
+    ],
+    "workerSwitches": {
+      "MaxConcurrentCalls": 32
+    },
+    "faultAppliedAt": 30,
+    "faultRemovedAt": 330,
+    "producerStopsAt": 330
+  },
+  "startedAt": "2026-10-31T22:20:44.0245409+00:00",
+  "finishedAt": "2026-10-31T22:26:29.4581512+00:00",
+  "drained": true,
+  "attemptsPerMessage": {
+    "messagesSent": 630,
+    "serviceBusDeliveries": {
+      "total": 3447,
+      "perMessage": 5.471
+    },
+    "httpAttemptsFromWorker": {
+      "total": 584,
+      "perMessage": 0.927
+    },
+    "httpRequestsAtApi": {
+      "total": 584,
+      "perMessage": 0.927
+    },
+    "dbConnectionOpens": {
+      "total": 584,
+      "perMessage": 0.927
+    },
+    "npgsqlConnectionsCreated": {
+      "total": 2,
+      "perMessage": 0.003
+    },
+    "toxiproxyConnections": {
+      "total": 2,
+      "perMessage": 0.003
+    },
+    "dbCommands": {
+      "total": 584,
+      "perMessage": 0.927
+    },
+    "efRetries": {
+      "total": 0,
+      "perMessage": 0
+    },
+    "pgInsertCalls": {
+      "total": 584,
+      "perMessage": 0.927
+    },
+    "rows": {
+      "total": 584,
+      "perMessage": 0.927
+    }
+  },
+  "hitMessages": {
+    "definition": "Messages whose count at any layer differs from the clean path: 1 delivery, 1 HTTP attempt, 1 request, 1 connection open, 1 command, 0 EF retries, 1 row",
+    "messagesCounted": 630,
+    "cleanMessages": 317,
+    "hitMessages": 313,
+    "perLayer": {
+      "serviceBusDeliveries": {
+        "total": 3130,
+        "perMessage": 10,
+        "max": 10
+      },
+      "httpAttemptsFromWorker": {
+        "total": 267,
+        "perMessage": 0.853,
+        "max": 9
+      },
+      "httpRequestsAtApi": {
+        "total": 267,
+        "perMessage": 0.853,
+        "max": 9
+      },
+      "dbConnectionOpens": {
+        "total": 267,
+        "perMessage": 0.853,
+        "max": 9
+      },
+      "dbCommands": {
+        "total": 267,
+        "perMessage": 0.853,
+        "max": 9
+      },
+      "efRetries": {
+        "total": 0,
+        "perMessage": 0,
+        "max": 0
+      },
+      "rows": {
+        "total": 267,
+        "perMessage": 0.853,
+        "max": 9
+      },
+      "abandoned": {
+        "total": 3130,
+        "perMessage": 10,
+        "max": 10
+      },
+      "rescheduled": {
+        "total": 0,
+        "perMessage": 0,
+        "max": 0
+      },
+      "callerGoneWhileRunning": {
+        "total": 267,
+        "perMessage": 0.853,
+        "max": 9
+      }
+    }
+  },
+  "recovery": {
+    "definition": "Seconds from the removal of the fault until the backlog (producer.sent - worker.completed - runner.dlq_peeked) is back to its warmup maximum and stays there until the end of the run",
+    "faultRemovedAtSeconds": 330.0129474,
+    "baselineBacklog": 0,
+    "peakBacklog": 220,
+    "backlogAtRemoval": 0,
+    "recoveredAtSeconds": 331,
+    "recoverySeconds": 1
+  },
+  "duplicates": {
+    "rows": 584,
+    "distinctMessages": 354,
+    "messagesWithDuplicates": 32,
+    "duplicateRows": 230,
+    "maxRowsPerMessage": 9
+  },
+  "deadLettered": {
+    "fromQueueRuntimeProperties": 313,
+    "fromPeekingDlq": 313
+  },
+  "totals": {
+    "producer": {
+      "service": "producer",
+      "timestamp": "2026-10-31T22:26:29.2436523\u002B00:00",
+      "counters": {
+        "send_failed": 0,
+        "sent": 630
+      },
+      "gauges": {}
+    },
+    "worker": {
+      "service": "worker",
+      "timestamp": "2026-10-31T22:26:29.2440523\u002B00:00",
+      "counters": {
+        "abandon_failed": 0,
+        "abandoned": 3130,
+        "admin_errors": 0,
+        "complete_failed": 0,
+        "dead_lettered_by_worker": 0,
+        "handler_succeeded": 317,
+        "http_attempts": 584,
+        "lock_lost": 0,
+        "other_errors": 0,
+        "received": 3447,
+        "received_delivery_1": 630,
+        "received_delivery_10": 313,
+        "received_delivery_2": 313,
+        "received_delivery_3": 313,
+        "received_delivery_4": 313,
+        "received_delivery_5": 313,
+        "received_delivery_6": 313,
+        "received_delivery_7": 313,
+        "received_delivery_8": 313,
+        "received_delivery_9": 313,
+        "rescheduled": 0,
+        "retry_budget_denied": 0
+      },
+      "gauges": {
+        "completed": 317,
+        "in_flight": 0,
+        "queue_active": 0,
+        "queue_dead_lettered": 313
+      }
+    },
+    "ordersapi": {
+      "service": "ordersapi",
+      "timestamp": "2026-10-31T22:26:29.2443535\u002B00:00",
+      "counters": {
+        "db_command_canceled": 0,
+        "db_command_executed": 584,
+        "db_command_failed": 0,
+        "db_connection_failed": 0,
+        "db_connection_opened": 584,
+        "ef_retries": 0,
+        "fault_errors_injected": 0,
+        "npgsql_connection_created": 2,
+        "orders_caller_gone_while_running": 267,
+        "orders_requests": 584,
+        "orders_responses": 584,
+        "orders_responses_200": 584,
+        "retry_budget_denied": 0
+      },
+      "gauges": {
+        "fault_queued": 0
+      }
+    }
+  },
+  "groundTruth": {
+    "timestamp": "2026-10-31T22:26:29.2475745\u002B00:00",
+    "rows": 584,
+    "distinctMessages": 354,
+    "messagesWithDuplicates": 32,
+    "duplicateRows": 230,
+    "maxRowsPerMessage": 9,
+    "insertCalls": 584,
+    "insertRows": 584
+  }
+}

@@ -12,10 +12,22 @@ internal sealed record RunnerSettings
     public string Queue              { get; init; } = "orders";
     public string Proxy              { get; init; } = "postgres";
 
+    public bool UsesEmulator => ServiceBus.Contains("UseDevelopmentEmulator=true", StringComparison.OrdinalIgnoreCase);
+
     public static RunnerSettings Load()
     {
         var path = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
-        return JsonSerializer.Deserialize<RunnerSettings>(File.ReadAllText(path), JsonDefaults.Options)
-               ?? new RunnerSettings();
+        var settings = JsonSerializer.Deserialize<RunnerSettings>(File.ReadAllText(path), JsonDefaults.Options)
+                       ?? new RunnerSettings();
+
+        // The same variable that makes the AppHost use a real namespace. A namespace has one endpoint for both.
+        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__servicebus");
+        return string.IsNullOrEmpty(connectionString)
+            ? settings
+            : settings with
+            {
+                ServiceBus = connectionString,
+                ServiceBusAdmin = connectionString
+            };
     }
 }

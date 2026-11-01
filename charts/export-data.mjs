@@ -37,6 +37,13 @@ const layers = [
     { key: "rows", label: "Rows" },
 ];
 
+const brownout = {
+    defaults: { charted: "D-brownout-cloud-20261031-222044", other: "D-brownout-cloud-20261031-171829" },
+    fixed: { charted: "D-brownout-cfg346-cloud-20261031-220612", other: "D-brownout-cfg346-cloud-20261031-172815" },
+};
+
+const sampleEverySeconds = 5;
+
 function readRun(run) {
     const read = (file) => JSON.parse(readFileSync(join(resultsDir, run, file), "utf8"));
     return { summary: read("summary.json"), config: read("config.json") };
@@ -96,6 +103,67 @@ function exportAttemptsPerLayer() {
     };
 }
 
+function readTimeseries(run) {
+    const [header, ...lines] = readFileSync(join(resultsDir, run, "timeseries.csv"), "utf8").trim().split(/\r?\n/);
+    const columns = header.split(",");
+    return lines.map((line) => {
+        const values = line.split(",");
+        const column = (name) => Number(values[columns.indexOf(name)]);
+        return {
+            seconds: Math.round(column("elapsed_s")),
+            sent: column("producer.sent"),
+            completed: column("worker.completed"),
+            deadLettered: column("runner.dlq_peeked"),
+        };
+    });
+}
+
+function brownoutRun(run, expectFixed) {
+    const { summary, config } = readRun(run);
+    if (!summary.drained) {
+        throw new Error(`${run} did not drain`);
+    }
+    if (config.runner.usesEmulator || config.worker.processor.maxConcurrentCalls !== 32) {
+        throw new Error(`${run} isn't a real namespace run at MaxConcurrentCalls 32`);
+    }
+    const { passCancellation, tunedBreaker, delayedRedelivery, retryBudget } = config.worker.experiment;
+    const isFixed = Boolean(passCancellation && tunedBreaker && delayedRedelivery);
+    const isDefaults = !passCancellation && !tunedBreaker && !delayedRedelivery;
+    if ((expectFixed ? !isFixed : !isDefaults) || retryBudget) {
+        throw new Error(`${run} has the wrong experiment settings`);
+    }
+    return { summary };
+}
+
+function brownoutPanel({ charted, other }, expectFixed) {
+    const { summary } = brownoutRun(charted, expectFixed);
+    const samples = readTimeseries(charted);
+    const last = samples[samples.length - 1];
+    const { summary: otherSummary } = brownoutRun(other, expectFixed);
+    return {
+        run: charted,
+        recoverySeconds: summary.recovery.recoverySeconds,
+        samples: samples.filter((sample) => sample.seconds % sampleEverySeconds === 0 || sample === last),
+        otherRun: {
+            run: other,
+            deadLettered: otherSummary.deadLettered.fromPeekingDlq,
+            recoverySeconds: otherSummary.recovery.recoverySeconds,
+        },
+    };
+}
+
+function exportBrownoutMessages() {
+    const { scenario } = readRun(brownout.defaults.charted).summary;
+    return {
+        measuredOn: "real Service Bus namespace",
+        spike: { fromSeconds: 90, toSeconds: 120 },
+        faultRemovedAtSeconds: scenario.faultRemovedAt,
+        defaults: brownoutPanel(brownout.defaults, false),
+        fixed: brownoutPanel(brownout.fixed, true),
+    };
+}
+
 mkdirSync(dataDir, { recursive: true });
 writeFileSync(join(dataDir, "attempts-per-layer.json"), JSON.stringify(exportAttemptsPerLayer(), null, 4) + "\n");
 writeFileSync(join(dataDir, "dead-letters-vs-outage.json"), JSON.stringify(exportDeadLettersVsOutage(), null, 4) + "\n");
+writeFileSync(join(dataDir, "brownout-messages.json"), JSON.stringify(exportBrownoutMessages(), null, 4) + "\n");

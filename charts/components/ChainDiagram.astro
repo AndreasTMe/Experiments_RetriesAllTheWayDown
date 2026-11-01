@@ -1,0 +1,146 @@
+---
+// Image 0: the chain from producer to Postgres, with the retry at each layer and where the faults are injected.
+const width = 720;
+const boxWidth = 220;
+const boxHeight = 44;
+const gap = 36;
+const left = 2;
+const top = 2;
+const textX = 280;
+
+const boxes = [
+    { name: "Producer" },
+    { name: "Service Bus queue" },
+    { name: "Worker" },
+    { name: "Orders API", fault: "Faults C, D: 500s, capacity limit" },
+    { name: "toxiproxy", fault: "Faults A, B: down, slow" },
+    { name: "Postgres" },
+];
+
+// Each retry belongs to the hop below a box, and loops back from the next box.
+const retries = [
+    { from: 1, text: "10 deliveries, then dead-letter" },
+    { from: 2, text: "4 attempts, 10 s each, 30 s total" },
+    { from: 3, text: "7 attempts over about 57 s" },
+];
+
+const height = top * 2 + boxes.length * boxHeight + (boxes.length - 1) * gap;
+const boxTop = (index: number) => top + index * (boxHeight + gap);
+const boxMiddle = (index: number) => boxTop(index) + boxHeight / 2;
+const right = left + boxWidth;
+
+const loopPath = (from: number) => {
+    const start = boxMiddle(from + 1) - 10;
+    const end = boxMiddle(from) + 10;
+    return `M${right} ${start} H${right + 22} V${end} H${right + 7}`;
+};
+
+const summary = `Diagram of the chain, top to bottom: ${boxes.map((box) => box.name).join(", ")}. The queue redelivers up to 10 times, the Worker's HTTP client makes up to 4 attempts, and EF Core in the API makes up to 7. Faults A and B are injected at toxiproxy, faults C and D at the API.`;
+---
+
+<figure class="chart">
+    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={summary}>
+        <defs>
+            <marker id="chain-step" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto">
+                <path class="step-head" d="M0 0 L8 4 L0 8 Z" />
+            </marker>
+            <marker id="chain-retry" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto">
+                <path class="retry-head" d="M0 0 L8 4 L0 8 Z" />
+            </marker>
+        </defs>
+        {
+            boxes.slice(0, -1).map((_, index) => (
+                <line
+                    class="step"
+                    x1={left + boxWidth / 2}
+                    x2={left + boxWidth / 2}
+                    y1={boxTop(index) + boxHeight}
+                    y2={boxTop(index + 1) - 2}
+                    marker-end="url(#chain-step)"
+                />
+            ))
+        }
+        {
+            boxes.map((box, index) => (
+                <g>
+                    <rect class="box" x={left} y={boxTop(index)} width={boxWidth} height={boxHeight} rx="4" />
+                    <text class="label" x={left + boxWidth / 2} y={boxMiddle(index)} text-anchor="middle" dominant-baseline="middle">
+                        {box.name}
+                    </text>
+                    {
+                        box.fault && (
+                            <text class="fault" x={textX} y={boxMiddle(index)} dominant-baseline="middle">
+                                {box.fault}
+                            </text>
+                        )
+                    }
+                </g>
+            ))
+        }
+        {
+            retries.map(({ from, text }) => (
+                <g>
+                    <path class="retry" d={loopPath(from)} marker-end="url(#chain-retry)" />
+                    <text class="label" x={textX} y={boxTop(from) + boxHeight + gap / 2} dominant-baseline="middle">
+                        {text}
+                    </text>
+                </g>
+            ))
+        }
+    </svg>
+    <figcaption>
+        The chain, with the retry at each layer and where the faults are injected. On paper that's 10 × 4 × 7 attempts
+        for one message.
+    </figcaption>
+</figure>
+
+<style>
+    .chart {
+        margin: 2em 0;
+    }
+    svg {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+    .box {
+        fill: none;
+        stroke: var(--muted);
+    }
+    .step {
+        stroke: var(--muted);
+    }
+    .step-head {
+        fill: var(--muted);
+    }
+    .retry {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 2;
+    }
+    .retry-head {
+        fill: var(--accent);
+    }
+    .label {
+        fill: var(--fg);
+        font-family: var(--font-display);
+        font-size: 15px;
+    }
+    .fault {
+        fill: var(--muted);
+        font-family: var(--font-display);
+        font-size: 15px;
+    }
+    /* The SVG scales down on a phone, so its text starts larger there. */
+    @media (max-width: 520px) {
+        .label,
+        .fault {
+            font-size: 24px;
+        }
+    }
+    figcaption {
+        margin-top: 0.5em;
+        color: var(--muted);
+        font-size: 0.875rem;
+    }
+</style>
